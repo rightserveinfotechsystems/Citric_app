@@ -6,7 +6,7 @@ import { Controller, useForm } from 'react-hook-form';
 import CustomTextInput from './common/CustomTextInput';
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import moment from 'moment';
-import { DatePicker } from 'react-native-woodpicker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { communication } from '../services/communication';
 import { useNavigation } from '@react-navigation/native';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
@@ -62,6 +62,7 @@ export default function ApplyForIncubation() {
   });
 
   const [pickedDOB, setPickedDOB] = useState("");
+  const [showDobPicker, setShowDobPicker] = useState(false);
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
   const [selectAgree, setSelectAgree] = useState(false);
@@ -419,15 +420,34 @@ export default function ApplyForIncubation() {
           <View style={styles.inputBox}>
             <Text style={[styles.label]}>6. Date of Birth*</Text>
 
-            <DatePicker
-              style={[styles.dropDownBox, { width: "100%", marginLeft: -2 }]}
-              value={pickedDOB}
-              onDateChange={setPickedDOB}
-              title="Date Picker"
-              text={handleText()}
-              isNullable={false}
-              iosDisplay="inline"
-            />
+            {/* B1 port: react-native-woodpicker (unmaintained, breaks on React 19) →
+                @react-native-community/datetimepicker (already a dependency, Expo-maintained).
+                Identical UX: styled box shows placeholder until a date is chosen; Android opens
+                the native dialog; iOS shows the inline calendar. */}
+            <TouchableOpacity
+              style={[styles.dropDownBox, { width: "100%", marginLeft: -2, justifyContent: "center" }]}
+              onPress={() => {
+                if (Platform.OS === "android") {
+                  DateTimePickerAndroid.open({
+                    value: pickedDOB ? new Date(pickedDOB) : new Date(2000, 0, 1),
+                    mode: "date",
+                    onChange: (_event, date) => { if (date) setPickedDOB(date); },
+                  });
+                } else {
+                  setShowDobPicker(true);
+                }
+              }}
+            >
+              <Text>{handleText()}</Text>
+            </TouchableOpacity>
+            {Platform.OS === "ios" && showDobPicker && (
+              <DateTimePicker
+                value={pickedDOB ? new Date(pickedDOB) : new Date(2000, 0, 1)}
+                mode="date"
+                display="inline"
+                onChange={(_event, date) => { if (date) setPickedDOB(date); }}
+              />
+            )}
             {/* </View> */}
 
           </View>

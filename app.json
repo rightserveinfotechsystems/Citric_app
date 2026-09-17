@@ -2,30 +2,35 @@
   "expo": {
     "name": "Citri Hub",
     "slug": "citric-app",
-    "version": "2.0.1",
-    "platforms": [
-      "ios",
-      "android"
-    ],
+    "version": "2.1.0",
+    "platforms": ["ios", "android"],
+    "icon": "./src/assets/citriLogo.png",
     "plugins": [
-      "expo-asset"
+      "expo-asset",
+      ["expo-splash-screen", { "image": "./src/assets/citriLogo.png", "imageWidth": 200, "backgroundColor": "#ffffff" }],
+      "./plugins/withCitricHubConfig.js"
     ],
     "android": {
       "package": "com.citric_app",
-      "versionCode": 7
+      "versionCode": 8,
+      "allowBackup": false,
+      "adaptiveIcon": {
+        "foregroundImage": "./src/assets/citriLogo.png",
+        "backgroundColor": "#ffffff"
+      }
     },
     "ios": {
       "bundleIdentifier": "com.citric.app",
-      "buildNumber": "7"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "8836b1f1-925f-472d-b83d-1837b1952cbf"
+      "buildNumber": "8",
+      "infoPlist": {
+        "CFBundleDisplayName": "Citri Hub",
+        "NSAppTransportSecurity": { "NSAllowsArbitraryLoads": false, "NSAllowsLocalNetworking": true },
+        "NSLocationWhenInUseUsageDescription": "",
+        "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait", "UIInterfaceOrientationLandscapeLeft", "UIInterfaceOrientationLandscapeRight"]
       }
     },
-    "updates": {
-      "url": "https://u.expo.dev/8836b1f1-925f-472d-b83d-1837b1952cbf"
-    },
-    "runtimeVersion": "2.0.1"
+    "updates": { "url": "https://u.expo.dev/8836b1f1-925f-472d-b83d-1837b1952cbf" },
+    "runtimeVersion": { "policy": "appVersion" },
+    "extra": { "eas": { "projectId": "8836b1f1-925f-472d-b83d-1837b1952cbf" } }
   }
 }

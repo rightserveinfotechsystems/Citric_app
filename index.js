@@ -2,13 +2,12 @@
  * @format
  */
 
-import {AppRegistry} from 'react-native';
+import { registerRootComponent } from 'expo';
 import App from './App';
 
-// The registered component name MUST equal the native module name:
-//   - android/app/src/main/java/com/citric_app/MainActivity.kt → getMainComponentName()
-//   - ios/citric_app/AppDelegate.mm                            → self.moduleName
-// app.json intentionally holds ONLY the "expo" object (SDK 52 Expo config rejects a mixed
-// root: "Root-level expo object found. Ignoring extra keys: name, displayName"), so the
-// JS-side component name is declared here as its single source of truth.
-AppRegistry.registerComponent('citric_app', () => App);
+// SDK 57 CNG convention: registerRootComponent registers the root component as "main",
+// which matches the GENERATED native shells (MainActivity.getMainComponentName() = "main"
+// and AppDelegate.swift factory.startReactNative(withModuleName: "main")) — no native
+// mods required. The registered name is independent of app.json (which holds only the
+// "expo" object, per Expo config rules).
+registerRootComponent(App);
