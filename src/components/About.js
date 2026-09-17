@@ -1,13 +1,15 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, ImageBackground } from 'react-native';
 import { TopNavbar } from './common/TopNavbar';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';;
 
 export default function About() {
+  const insets = useSafeAreaInsets();
   return (
     <View style={{ backgroundColor: "white", flex: 1 }}>
       <TopNavbar titleName="About" />
       <ImageBackground source={require("../assets/AppBackground.jpg")} style={styles.mainContainer}  >
-      <ScrollView style={styles.container}>
+      <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: insets.bottom }}>
         <Text style={[styles.title, { marginTop: 10 }]}>CitriHub, the Agri-business Incubation Centre of ICAR-Central Citrus Research Institute, Nagpur is dedicated to fostering innovation and agripreneurship in the citrus domain. Our goal is to support startups and entrepreneurs in transforming their ideas into successful agri-businesses that contribute to the growth and sustainability of the citrus sector.</Text>
         <View style={{marginVertical:"12"}}>
           <Image style={styles.aboutPhoto} source={require("../assets/aboutPhoto.png")} />

@@ -1,13 +1,15 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, ImageBackground } from 'react-native';
 import { TopNavbar } from './common/TopNavbar';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';;
 
 export default function IncubationModule() {
+  const insets = useSafeAreaInsets();
   return (
     <View style={{flex: 1 }}>
       <TopNavbar titleName="Incubation Models" />
       <ImageBackground source={require("../assets/AppBackground.jpg")} style={styles.mainContainer}  >
-      <ScrollView style={styles.container}>
+      <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: insets.bottom }}>
         <View style={{ marginTop: 20 }}>
             <View style={styles.listItem}>
               <Text style={styles.bulletDot}>•</Text>

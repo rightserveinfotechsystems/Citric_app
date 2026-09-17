@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Linking, Alert, TouchableOpacity, FlatList, ScrollView, ImageBackground } from 'react-native';
 import { TopNavbar } from './common/TopNavbar';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { communication } from '../services/communication';
 
 export default function Announcement() {
+  const insets = useSafeAreaInsets();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -82,6 +84,7 @@ export default function Announcement() {
           data?.length > 0 ? 
           <FlatList
           style={styles.container}
+          contentContainerStyle={{ paddingBottom: insets.bottom }}
           renderItem={renderItem}
           data={data}
           keyExtractor={(item, index) => index.toString()}

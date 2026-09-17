@@ -10,6 +10,14 @@
       android:allowBackup="false"
       android:theme="@style/AppTheme"
       android:supportsRtl="true">
+
+      <!-- EAS Update (expo-updates ~0.27.5). Keys verified against expo-updates SDK 52 source.
+           RUNTIME_VERSION rule: bump together with expo.version whenever NATIVE code/deps change;
+           keep unchanged for JS-only OTA releases. EAS injects the profile's channel at build time. -->
+      <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="https://u.expo.dev/8836b1f1-925f-472d-b83d-1837b1952cbf" />
+      <meta-data android:name="expo.modules.updates.EXPO_RUNTIME_VERSION" android:value="2.0.1" />
+      <meta-data android:name="expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY" android:value='{"expo-channel-name":"production"}' />
+
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"

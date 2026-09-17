@@ -1,14 +1,16 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, ImageBackground } from 'react-native';
 import { TopNavbar } from './common/TopNavbar';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';;
 
 export default function PotencialVentures() {
+  const insets = useSafeAreaInsets();
   return (
     <View style={{flex:1}}>
       <TopNavbar titleName="Potencial Ventures" />
       <ImageBackground source={require("../assets/AppBackground.jpg")} style={styles.mainContainer}  >
 
-      <ScrollView style={styles.container}>
+      <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: insets.bottom }}>
         <View style={{ marginTop: 20 }}>
           <Text style={styles.headTitle}>The following ventures offer immense potential for citripreneurs. By focusing on innovation, quality, and market demands, incubates can establish successful agribusinesses and contribute to the growth of the citrus sector.
           </Text>

@@ -4,6 +4,12 @@
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="android:editTextBackground">@drawable/launch_screen</item>
+
+        <!-- REQUIRED COMPANION to targetSdkVersion 35 (Android 15):
+             preserves the current (non edge-to-edge) layout so the UI is pixel-identical
+             to the live store build. Devices < API 35 ignore this attribute.
+             Remove only after a tested edge-to-edge UI pass (targetSdk 36 deadline). -->
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
     </style>
 
 </resources>

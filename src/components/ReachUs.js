@@ -1,9 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, Linking, Alert, TouchableOpacity, ImageBackground, ScrollView } from 'react-native';
 import { TopNavbar } from './common/TopNavbar';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
 
 export default function ReachUs() {
+  const insets = useSafeAreaInsets();
 
   const openEmail1 = () => {
     const email = 'director.ccri@icar.gov.in';
@@ -79,7 +81,7 @@ export default function ReachUs() {
       <TopNavbar titleName="Reach Us" />
       {/* <ScrollView> */}
       <ImageBackground source={require("../assets/BackgroundforContactUs.jpg")} style={styles.container}>
-                  <ScrollView>
+                  <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom }}>
         <View style={styles.logoContainer}>
           <Image style={styles.imageView} source={require("../assets/icar.png")} />
           <Image style={styles.imageView} source={require("../assets/iccri.png")} />

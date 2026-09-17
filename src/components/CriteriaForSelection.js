@@ -1,15 +1,17 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, ImageBackground } from 'react-native';
 import { TopNavbar } from './common/TopNavbar';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';;
 
 export default function CriteriaForSelection() {
+  const insets = useSafeAreaInsets();
   return (
     <View style={{ backgroundColor: "white", flex: 1 }}>
 
       <TopNavbar titleName="Criteria For Selection" />
       <ImageBackground source={require("../assets/AppBackground.jpg")} style={styles.mainContainer}  >
 
-      <ScrollView>
+      <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom }}>
         <View style={[styles.titleBox,{marginTop:10}]}>
           <Text style={styles.bulletPoint}>1.</Text>
           <View style={{ flexDirection: "column" }}>

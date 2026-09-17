@@ -1,13 +1,15 @@
 import React from 'react';
 import { View, Text, StyleSheet, ImageBackground, ScrollView } from 'react-native';
-import { TopNavbar } from './common/TopNavbar'
+import { TopNavbar } from './common/TopNavbar';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Genesis() {
+  const insets = useSafeAreaInsets();
   return (
     <View style={{ backgroundColor: "white", flex: 1 }}>
       <TopNavbar titleName="Genesis" />
       <ImageBackground source={require("../assets/BackgroundforGenesis.jpg")} style={styles.container}>
-            <ScrollView>
+            <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom }}>
       
         <View style={styles.titleBox}>
           <Text style={styles.bulletPoint}>•</Text>

@@ -10,11 +10,15 @@ import {
   Dimensions,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useSafeAreaInsets, initialWindowMetrics } from 'react-native-safe-area-context';
 
 const { width: screenWidth } = Dimensions.get('window'); // Get screen width dynamically
 
 export const TopNavbar = ({ titleName }) => {
   const navigation = useNavigation();
+  // Real device insets (status bar / notch / Dynamic Island on iOS, bars on Android
+  // edge-to-edge). On Android today (non edge-to-edge) these report 0 → zero visual change.
+  const insets = useSafeAreaInsets();
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuAnimation] = useState(new Animated.Value(screenWidth)); // Start off-screen
 
@@ -37,10 +41,22 @@ export const TopNavbar = ({ titleName }) => {
 
   return (
     <>
-      <View style={topNavbarStyle.navbarTop}>
-        <TouchableOpacity style={{ width: 40,height: 50}} onPress={() => navigation.goBack()}>
+      <View
+        style={[
+          topNavbarStyle.navbarTop,
+          {
+            // Keep the bar painted behind the status bar while pushing its
+            // contents below the notch/Dynamic Island (iOS) or system bars
+            // (Android edge-to-edge, when enabled). Portrait Android today: 0 → unchanged.
+            paddingTop: insets.top,
+            paddingLeft: 10 + insets.left,
+            paddingRight: insets.right,
+          },
+        ]}
+      >
+        <TouchableOpacity style={{ width: 40, height: 50 }} onPress={() => navigation.goBack()}>
           <Image
-            style={topNavbarStyle.backIcon}
+            style={[topNavbarStyle.backIcon, { marginTop: insets.top > 0 ? 0 : 15 }]}
             source={require("../../assets/backArrow.png")}
           />
         </TouchableOpacity>
@@ -67,6 +83,12 @@ export const TopNavbar = ({ titleName }) => {
         <Animated.View
           style={[
             topNavbarStyle.menuContainer,
+            {
+              // Modals render in a separate root (outside SafeAreaProvider), so we use
+              // the static window metrics snapshot instead of the context hook.
+              paddingTop: 20 + (initialWindowMetrics?.insets?.top ?? 0),
+              paddingLeft: 10 + (initialWindowMetrics?.insets?.left ?? 0),
+            },
             { transform: [{ translateX: menuAnimation }] }, // Slide effect
           ]}
         >

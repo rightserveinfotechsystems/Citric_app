@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, Button, ActivityIndicator, ImageBackground, Modal, Linking } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, Button, ActivityIndicator, ImageBackground, Modal, Linking, Platform, KeyboardAvoidingView } from 'react-native';
 import { TopNavbar } from './common/TopNavbar';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Controller, useForm } from 'react-hook-form';
 import CustomTextInput from './common/CustomTextInput';
 import BouncyCheckbox from "react-native-bouncy-checkbox";
@@ -19,6 +20,7 @@ import { stateArray } from './common/stateArray';
 
 
 export default function ApplyForIncubation() {
+  const insets = useSafeAreaInsets();
   const { control, handleSubmit, formState: { errors } } = useForm();
   const [loader, setLoader] = useState(false);
   const [selectedGender, setSelectedGender] = useState(null); // "Male" or "Female"
@@ -237,7 +239,12 @@ export default function ApplyForIncubation() {
       <TopNavbar titleName="Apply For Incubation" />
       <ImageBackground source={require("../assets/AppBackground.jpg")} style={styles.mainContainer}  >
 
-        <ScrollView>
+        {/* iOS: lift the form above the keyboard (Android uses native adjustResize). */}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          style={{ flex: 1 }}
+        >
+        <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom }}>
           <Controller
             control={control}
             name="name"
@@ -1046,6 +1053,7 @@ export default function ApplyForIncubation() {
             {loader ? <ActivityIndicator size="small" style={[styles.submitText, { marginTop: 5 }]} color="white" /> : <Text style={styles.submitText}>Apply</Text>}
           </TouchableOpacity>
         </ScrollView>
+        </KeyboardAvoidingView>
       </ImageBackground>
     </View>
   );

@@ -1,4 +1,31 @@
 {
-  "name": "citric_app",
-  "displayName": "citric_app"
+  "expo": {
+    "name": "Citri Hub",
+    "slug": "citric-app",
+    "version": "2.0.1",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "plugins": [
+      "expo-asset"
+    ],
+    "android": {
+      "package": "com.citric_app",
+      "versionCode": 7
+    },
+    "ios": {
+      "bundleIdentifier": "com.citric.app",
+      "buildNumber": "7"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "8836b1f1-925f-472d-b83d-1837b1952cbf"
+      }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/8836b1f1-925f-472d-b83d-1837b1952cbf"
+    },
+    "runtimeVersion": "2.0.1"
+  }
 }

@@ -1,15 +1,20 @@
 import {useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Linking } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Home() {
     const navigation = useNavigation()
+    const insets = useSafeAreaInsets();
     const handlePress = () => {
         // Open the URL in the default browser
         Linking.openURL('https://liveprosolutions.com/');
       };
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
+        >
             <View style={styles.logoContainer}>
                 <Image style={styles.imageView} source={require("../assets/icar.png")} />
                 <Image style={styles.imageView} source={require("../assets/citriLogo.png")} />

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Linking, Alert, ScrollView, TouchableOpacity, ImageBackground } from 'react-native';
 import { TopNavbar } from './common/TopNavbar';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const links = [
   {
@@ -31,6 +32,7 @@ const links = [
 
 
 export default function ImportantLinks() {
+  const insets = useSafeAreaInsets();
 
   
   const openLink = async (url) => {
@@ -47,7 +49,7 @@ export default function ImportantLinks() {
     <View style={{flex: 1, backgroundColor: "white"}}>
       <TopNavbar titleName="Important Links" />
       <ImageBackground source={require("../assets/BackgroundforImportantLinks.jpg")} style={styles.container}  >
-      <ScrollView style={{marginBottom:"40"}}>
+      <ScrollView style={{marginBottom:"40"}} contentContainerStyle={{ paddingBottom: insets.bottom }}>
         {links.map((link, index) => (
         <View key={index} style={styles.reachBox}>
           <Text style={styles.headTitle}>{link.title}</Text>
