@@ -106,7 +106,9 @@ function Banner({ label }) {
 function DotHeading({ label }) {
   return (
     <View style={styles.listItem}>
-      <Text style={styles.bulletDot}>•</Text>
+      <View style={styles.markerBox}>
+        <View style={styles.dot} />
+      </View>
       <Text style={styles.headTitle}>{label}</Text>
     </View>
   );
@@ -157,6 +159,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 15,
+    lineHeight: 22,
     fontWeight: '800',
     color: 'black',
     textAlign: 'justify',
@@ -167,6 +170,7 @@ const styles = StyleSheet.create({
   },
   bulletPoint: {
     fontSize: 16,
+    lineHeight: 22,
     width: 18,
     fontWeight: '800',
     color: 'black',
@@ -181,9 +185,20 @@ const styles = StyleSheet.create({
   },
   headTitle: {
     fontSize: 16,
+    lineHeight: 23,
     fontWeight: '800',
     color: 'black',
-    marginTop: 7,
+  },
+  markerBox: {
+    width: 26,
+    alignItems: 'flex-start',
+  },
+  dot: {
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
+    backgroundColor: '#1A1A1A',
+    marginTop: 8,
   },
   ventureTitle: {
     width: '100%',
@@ -201,11 +216,7 @@ const styles = StyleSheet.create({
   listItem: {
     flexDirection: 'row',
   },
-  bulletDot: {
-    fontSize: 28,
-    marginBottom: -15,
-    marginRight: 5,
-  },
+
   lastSection: {
     marginBottom: 20,
   },
