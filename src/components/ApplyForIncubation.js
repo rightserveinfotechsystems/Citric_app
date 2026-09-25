@@ -45,7 +45,6 @@ export default function ApplyForIncubation() {
     citrusbased: false,
     ecofriendly: false,
     IPprotection: false,
-    ecofriendly: false,
     designing: false,
   });
   const [selectedRequired, setSelectedRequired] = useState({
