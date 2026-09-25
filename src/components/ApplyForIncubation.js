@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, Button, ActivityIndicator, ImageBackground, Modal, Linking, Platform, KeyboardAvoidingView } from 'react-native';
-import { TopNavbar } from './common/TopNavbar';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View, Text, StyleSheet, Alert, TouchableOpacity, Button, ActivityIndicator, Modal, Linking, Platform } from 'react-native';
+import { ScreenShell } from './common/ScreenShell';
 import { Controller, useForm } from 'react-hook-form';
 import CustomTextInput from './common/CustomTextInput';
 import BouncyCheckbox from "react-native-bouncy-checkbox";
@@ -14,13 +13,14 @@ import RNPickerSelect from 'react-native-picker-select';
 import { educationArray } from '../utils/educationArray';
 import { occupationArray } from '../utils/occupationArray';
 import { convertDate } from '../utils/convertDate';
+
+const BACKGROUND = require('../assets/AppBackground.jpg');
 import { districtsArray } from './common/districtsArray';
 import { stateArray } from './common/stateArray';
 
 
 
 export default function ApplyForIncubation() {
-  const insets = useSafeAreaInsets();
   const { control, handleSubmit, formState: { errors } } = useForm();
   const [loader, setLoader] = useState(false);
   const [selectedGender, setSelectedGender] = useState(null); // "Male" or "Female"
@@ -236,16 +236,11 @@ export default function ApplyForIncubation() {
     setDistricts(stateData ? stateData.districts : []);
   };
   return (
-    <View style={styles.container}>
-      <TopNavbar titleName="Apply For Incubation" />
-      <ImageBackground source={require("../assets/AppBackground.jpg")} style={styles.mainContainer}  >
-
-        {/* iOS: lift the form above the keyboard (Android uses native adjustResize). */}
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          style={{ flex: 1 }}
-        >
-        <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom }}>
+    <ScreenShell
+      title="Apply For Incubation"
+      background={BACKGROUND}
+      keyboardAvoiding
+    >
           <Controller
             control={control}
             name="name"
@@ -1072,10 +1067,7 @@ export default function ApplyForIncubation() {
           <TouchableOpacity style={styles.submitBox} onPress={handleSubmit(submitForms)}>
             {loader ? <ActivityIndicator size="small" style={[styles.submitText, { marginTop: 5 }]} color="white" /> : <Text style={styles.submitText}>Apply</Text>}
           </TouchableOpacity>
-        </ScrollView>
-        </KeyboardAvoidingView>
-      </ImageBackground>
-    </View>
+    </ScreenShell>
   );
 }
 

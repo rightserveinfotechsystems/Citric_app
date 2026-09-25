@@ -1,28 +1,43 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet, ImageBackground, RefreshControl } from 'react-native';
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  ImageBackground,
+  RefreshControl,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TopNavbar } from './TopNavbar';
 
 /**
  * ScreenShell — the shared frame for every content screen:
- *   white root → TopNavbar → full-bleed background image → insets-aware ScrollView.
- *
- * Replaces the ~15 lines of identical boilerplate each screen used to carry
- * (root View + navbar + ImageBackground + ScrollView + inset math) with one declarative call.
+ *   root → [TopNavbar] → background (image or solid color) → insets-aware ScrollView.
  *
  * Props:
- *   title         string  — navbar title (e.g. "Genesis")
- *   background    number  — require('../assets/…') background image
- *   centered      bool    — center content horizontally (screens whose background is centered art)
- *   refreshing    bool    — pull-to-refresh spinner state (optional)
- *   onRefresh     fn      — enables pull-to-refresh when provided (optional)
- *   contentStyle  object  — extra styles for the scroll content container (optional)
- *   children      node
+ *   title            string  — navbar title
+ *   showNavbar       bool    — render the TopNavbar (default true; Home passes false)
+ *   background       number  — require('../assets/…') background image (optional)
+ *   backgroundColor  string  — solid background color when there is no image (optional)
+ *   centered         bool    — center content horizontally
+ *   keyboardAvoiding bool    — wrap the scroll area in KeyboardAvoidingView
+ *                               (iOS 'padding' / Android native adjustResize) — form screens
+ *   scrollEnabled    bool    — false → renders a plain View instead of ScrollView
+ *                               (for screens that host their own FlatList)
+ *   refreshing       bool    — pull-to-refresh spinner state (optional)
+ *   onRefresh        fn      — enables pull-to-refresh when provided (optional)
+ *   contentStyle     object  — extra styles for the scroll content container (optional)
+ *   children         node
  */
 export function ScreenShell({
   title,
+  showNavbar = true,
   background,
+  backgroundColor,
   centered = false,
+  keyboardAvoiding = false,
+  scrollEnabled = true,
   refreshing = false,
   onRefresh,
   contentStyle,
@@ -30,34 +45,58 @@ export function ScreenShell({
 }) {
   const insets = useSafeAreaInsets();
 
+  const frameStyle = [
+    styles.background,
+    centered && styles.centered,
+    backgroundColor ? { backgroundColor } : null,
+  ];
+
+  const scroll = scrollEnabled ? (
+    <ScrollView
+      contentContainerStyle={[
+        { paddingBottom: insets.bottom + 32 },
+        centered && styles.centered,
+        contentStyle,
+      ]}
+      refreshControl={
+        onRefresh ? (
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#EC7E1C"
+            colors={['#EC7E1C']}
+          />
+        ) : undefined
+      }
+    >
+      {children}
+    </ScrollView>
+  ) : (
+    <View style={[styles.flex, contentStyle]}>{children}</View>
+  );
+
   return (
     <View style={styles.root}>
-      <TopNavbar titleName={title} />
-      <ImageBackground
-        source={background}
-        style={[styles.background, centered && styles.centered]}
-      >
-        <ScrollView
-          contentContainerStyle={[
-            { paddingBottom: insets.bottom + 32 },
-            centered && styles.centered,
-            contentStyle,
-          ]}
-          refreshControl={
-            onRefresh ? (
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-                tintColor="#EC7E1C"
-                colors={['#EC7E1C']}
-              />
-            ) : undefined
-          }
-        >
-          {children}
-        </ScrollView>
-      </ImageBackground>
+      {showNavbar ? <TopNavbar titleName={title} /> : null}
+      {background ? (
+        <ImageBackground source={background} style={frameStyle}>
+          {keyboardAvoiding ? <Avoider>{scroll}</Avoider> : scroll}
+        </ImageBackground>
+      ) : (
+        <View style={frameStyle}>
+          {keyboardAvoiding ? <Avoider>{scroll}</Avoider> : scroll}
+        </View>
+      )}
     </View>
+  );
+}
+
+/** iOS: lift content above the keyboard. Android: native adjustResize handles it. */
+function Avoider({ children }) {
+  return (
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.flex}>
+      {children}
+    </KeyboardAvoidingView>
   );
 }
 
@@ -73,5 +112,8 @@ const styles = StyleSheet.create({
   },
   centered: {
     alignItems: 'center',
+  },
+  flex: {
+    flex: 1,
   },
 });
