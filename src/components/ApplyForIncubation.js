@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Alert, TouchableOpacity, Button, ActivityIndicator, Modal, Linking, Platform } from 'react-native';
+import { View, Text, StyleSheet, Alert, TouchableOpacity, ActivityIndicator, Modal, Linking, Platform } from 'react-native';
 import { ScreenShell } from './common/ScreenShell';
 import { Controller, useForm } from 'react-hook-form';
 import CustomTextInput from './common/CustomTextInput';
@@ -241,6 +241,13 @@ export default function ApplyForIncubation() {
       background={BACKGROUND}
       keyboardAvoiding
     >
+
+      {/* Helper banner — same fields, same validation; just easier to follow */}
+      <View style={styles.introCard}>
+        <Text style={styles.introText}>
+          Fill in all fields marked * — your application goes straight to the CitriHub team.
+        </Text>
+      </View>
           <Controller
             control={control}
             name="name"
@@ -1072,170 +1079,114 @@ export default function ApplyForIncubation() {
 }
 
 
+/* ── Form styles (modernized visuals — same fields, same logic, same validation) ── */
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white"
+  introCard: {
+    width: '90%',
+    marginHorizontal: '5%',
+    marginTop: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: '#EC7E1C',
   },
-  mainContainer: {
-    width: "100%",
-    // alignItems: "center",
-    resizeMode: "contain",
-    flex: 1,
+  introText: {
+    fontSize: 13.5,
+    fontWeight: '600',
+    color: '#444444',
+    lineHeight: 20,
   },
-  titleLabel: {
-    fontSize: 17,
-    fontWeight: '800',
-    color: 'red',
-  },
-  errorText: {
-    color: "red",
-    fontSize: 14,
-    marginLeft: 25
+  label: {
+    width: '90%',
+    marginHorizontal: '5%',
+    marginTop: 16,
+    marginBottom: 7,
+    fontSize: 14.5,
+    fontWeight: '700',
+    color: '#1F1F1F',
+    letterSpacing: 0.2,
   },
   row: {
     flexDirection: 'row',
-    // flexWrap: 'wrap',
-    // gap: 10,
   },
   inputBox: {
-    width: "90%",
-    marginHorizontal: "5%"
+    width: '90%',
+    marginHorizontal: '5%',
   },
-  label: {
-    color: "black",
-    marginTop: 10,
-    fontSize: 19,
-    marginBottom: 5,
-    fontWeight: "800",
-    // fontWeight: '700',
-  },
-  errorText: {
-    color: "red",
-    fontSize: 14,
-    marginLeft: 25
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    height: 40,
-    borderRadius: 10,
-    paddingLeft: 10,
-  },
-  submitBox: {
-    width: "90%",
-    height: 40,
-    backgroundColor: "green",
-    marginBottom: 50,
-    marginHorizontal: "5%",
-    marginTop: 30,
-    borderRadius: 10
+  dropDownBox: {
+    width: '90%',
+    marginHorizontal: '5%',
+    height: 50,
+    backgroundColor: '#FFFFFF',
+    borderColor: '#DDD5CC',
+    borderWidth: 1.5,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    justifyContent: 'center',
   },
   squareCheckbox: {
-    borderRadius: 0, // Square shape
+    borderRadius: 6, // softened square
     width: 24,
     height: 24,
   },
-  submitText: {
-    fontSize: 18,
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center",
-    marginTop: 5,
+  errorText: {
+    color: '#D21B16',
+    fontSize: 13,
+    fontWeight: '600',
+    marginLeft: '5%',
+    marginTop: 4,
   },
-  dropDownBox: {
-    // borderWidth: 1,
-    width: "90%",
-    marginHorizontal: "5%",
-    height: 40,
-    borderColor: 'black',
-    borderWidth: 1,
-    paddingHorizontal: 10,
-    // borderRadius: 10,
-    color: "black"
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
+  submitBox: {
     width: '90%',
-    maxHeight: '80%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    padding: 20,
+    marginHorizontal: '5%',
+    marginTop: 28,
+    marginBottom: 24,
+    height: 54,
+    backgroundColor: '#EC7E1C',
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
+  submitText: {
+    fontSize: 17,
+    color: 'white',
+    fontWeight: '800',
+    letterSpacing: 0.5,
   },
-  modalText: {
-    fontSize: 14,
-    color: '#333',
-    lineHeight: 22,
-  },
-  closeButton: {
-    marginTop: 20,
-    backgroundColor: '#EC7E1C',
-    paddingVertical: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  closeButtonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  headTitle: {
-    fontSize: 15,
-    color: "black",
-    fontWeight: "bold"
-  },
-  smallTitle: {
-    fontSize: 15,
-    color: "black"
-  },
-  link: {
-    color: "blue",
-    textDecorationLine: "underline",
-  },
-
-})
-
+});
 
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
     fontSize: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: 'gray',
-    borderRadius: 4,
-    color: 'black',
-    paddingRight: 30, // to ensure the text is not overlaid on the icon
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+    borderWidth: 1.5,
+    borderColor: '#DDD5CC',
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    color: '#1F1F1F',
+    marginTop: 4,
   },
   inputAndroid: {
     fontSize: 16,
-    paddingHorizontal: 10,
-    // paddingVertical: 8,
-    borderWidth: 1,
-    borderColor: 'black',
-    borderRadius: 8,
-    color: 'black',
-    paddingRight: 30,
-    marginTop: -10
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderWidth: 1.5,
+    borderColor: '#DDD5CC',
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    color: '#1F1F1F',
+    marginTop: 4,
   },
   placeholder: {
-    color: "black"
+    color: '#9E9A94',
   },
-
-
 });
