@@ -25,6 +25,8 @@ import { TopNavbar } from './TopNavbar';
  *                               (iOS 'padding' / Android native adjustResize) — form screens
  *   scrollEnabled    bool    — false → renders a plain View instead of ScrollView
  *                               (for screens that host their own FlatList)
+ *   NOTE: with showNavbar=false the shell auto-pads the content by the top/left/right
+ *   safe-area insets (Dynamic Island, notch, landscape ears) — nothing gets clipped.
  *   refreshing       bool    — pull-to-refresh spinner state (optional)
  *   onRefresh        fn      — enables pull-to-refresh when provided (optional)
  *   contentStyle     object  — extra styles for the scroll content container (optional)
@@ -45,6 +47,18 @@ export function ScreenShell({
 }) {
   const insets = useSafeAreaInsets();
 
+  // When there is no TopNavbar (chrome-less screens like Home), the shell itself must
+  // provide the safe-area padding: top (status bar / notch / Dynamic Island) and sides
+  // (notch ears in landscape). With a navbar, the bar already pads top/left/right and
+  // the content starts below it — so no extra top padding is applied.
+  const chromeInsets = showNavbar
+    ? null
+    : {
+        paddingTop: insets.top,
+        paddingLeft: insets.left,
+        paddingRight: insets.right,
+      };
+
   const frameStyle = [
     styles.background,
     centered && styles.centered,
@@ -55,6 +69,7 @@ export function ScreenShell({
     <ScrollView
       contentContainerStyle={[
         { paddingBottom: insets.bottom + 32 },
+        chromeInsets,
         centered && styles.centered,
         contentStyle,
       ]}
@@ -72,7 +87,7 @@ export function ScreenShell({
       {children}
     </ScrollView>
   ) : (
-    <View style={[styles.flex, contentStyle]}>{children}</View>
+    <View style={[styles.flex, chromeInsets, contentStyle]}>{children}</View>
   );
 
   return (
