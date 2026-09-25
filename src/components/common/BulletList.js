@@ -5,7 +5,8 @@ import { View, Text, StyleSheet } from 'react-native';
  * BulletList — one renderer for all bullet/numbered content screens.
  *
  * items: array of
- *   - string                        → plain bullet row (Genesis style)
+ *   - string                        → plain bullet row, rendered with the `body` style
+ *                                     (Genesis — the string is the whole row text)
  *   - { heading, body }             → heading + paragraph row
  * variant:
  *   - 'plain'     rounded-dot bullet + bold justified body          (Genesis)
@@ -29,21 +30,26 @@ export function BulletList({ items, variant = 'plain', style }) {
   const s = stylesByVariant[variant] || stylesByVariant.plain;
   return (
     <View style={style}>
-      {items.map((item, index) => (
-        <View key={index} style={[styles.row, s.row]}>
-          {variant === 'numbered' ? (
-            <Text style={s.marker}>{`${index + 1}.`}</Text>
-          ) : (
-            <View style={styles.markerBox}>
-              <View style={s.dot} />
+      {items.map((item, index) => {
+        // A plain string (Genesis) is shorthand for { body: item } — one render path
+        // for every input shape, so no row can ever come out empty.
+        const row = typeof item === 'string' ? { body: item } : item;
+        return (
+          <View key={index} style={[styles.row, s.row]}>
+            {variant === 'numbered' ? (
+              <Text style={s.marker}>{`${index + 1}.`}</Text>
+            ) : (
+              <View style={styles.markerBox}>
+                <View style={s.dot} />
+              </View>
+            )}
+            <View style={styles.textColumn}>
+              {row?.heading ? <Text style={s.heading}>{row.heading}</Text> : null}
+              {row?.body ? <Text style={s.body}>{row.body}</Text> : null}
             </View>
-          )}
-          <View style={styles.textColumn}>
-            {item.heading ? <Text style={s.heading}>{item.heading}</Text> : null}
-            {item.body ? <Text style={s.body}>{item.body}</Text> : null}
           </View>
-        </View>
-      ))}
+        );
+      })}
     </View>
   );
 }

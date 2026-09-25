@@ -9,7 +9,7 @@ import {
   Animated,
   Dimensions,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useSafeAreaInsets, initialWindowMetrics } from 'react-native-safe-area-context';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -30,34 +30,46 @@ const MENU_ITEMS = [
 
 const HIT_SLOP = { top: 8, bottom: 8, left: 8, right: 8 };
 
+const windowInsets = initialWindowMetrics?.insets;
+
 export const TopNavbar = ({ titleName }) => {
   const navigation = useNavigation();
+  const route = useRoute();
   // Real device insets (status bar / notch / Dynamic Island on iOS, bars on Android
   // edge-to-edge). On Android today (non edge-to-edge) these report 0 → zero visual change.
   const insets = useSafeAreaInsets();
   const [menuVisible, setMenuVisible] = useState(false);
-  const [menuAnimation] = useState(new Animated.Value(screenWidth)); // Start off-screen
+  const [slide] = useState(new Animated.Value(screenWidth)); // panel off-screen (right)
+  const [fade] = useState(new Animated.Value(0)); // backdrop opacity
 
-  const toggleMenu = () => {
-    if (menuVisible) {
-      Animated.timing(menuAnimation, {
-        toValue: screenWidth, // Slide out of view
+  const openMenu = () => {
+    setMenuVisible(true);
+    Animated.parallel([
+      Animated.timing(slide, {
+        toValue: screenWidth * 0.3, // panel occupies the right 70%
         duration: 300,
         useNativeDriver: false,
-      }).start(() => setMenuVisible(false));
-    } else {
-      setMenuVisible(true);
-      Animated.timing(menuAnimation, {
-        toValue: screenWidth * 0.3, // Slide in, occupy 70% of screen width
-        duration: 300,
-        useNativeDriver: false,
-      }).start();
-    }
+      }),
+      Animated.timing(fade, { toValue: 1, duration: 300, useNativeDriver: true }),
+    ]).start();
   };
 
-  const navigateTo = (route) => {
-    toggleMenu();
-    navigation.navigate(route);
+  const closeMenu = () => {
+    Animated.parallel([
+      Animated.timing(slide, {
+        toValue: screenWidth, // slide out of view
+        duration: 280,
+        useNativeDriver: false,
+      }),
+      Animated.timing(fade, { toValue: 0, duration: 280, useNativeDriver: true }),
+    ]).start(() => setMenuVisible(false));
+  };
+
+  const toggleMenu = () => (menuVisible ? closeMenu() : openMenu());
+
+  const navigateTo = (targetRoute) => {
+    closeMenu();
+    navigation.navigate(targetRoute);
   };
 
   return (
@@ -105,56 +117,98 @@ export const TopNavbar = ({ titleName }) => {
         </View>
       </View>
 
-      {/* Hamburger Menu Modal */}
+      {/* Hamburger Menu Modal — sliding panel + fading backdrop */}
       <Modal
         animationType="none"
         transparent={true}
         visible={menuVisible}
-        onRequestClose={toggleMenu}
+        onRequestClose={closeMenu}
       >
-        <TouchableOpacity style={styles.modalOverlay} onPress={toggleMenu} />
-        <Animated.View
-          style={[
-            styles.menuContainer,
-            {
-              // Modals render in a separate root (outside SafeAreaProvider), so we use
-              // the static window metrics snapshot instead of the context hook.
-              paddingTop: 12 + (initialWindowMetrics?.insets?.top ?? 0),
-              paddingLeft: 10 + (initialWindowMetrics?.insets?.left ?? 0),
-            },
-            { transform: [{ translateX: menuAnimation }] }, // Slide effect
-          ]}
-        >
-          {/* Close Button */}
-          <TouchableOpacity style={styles.closeButton} onPress={toggleMenu}>
-            <Image
-              style={styles.closeIcon}
-              source={require('../../assets/close.png')}
-            />
-          </TouchableOpacity>
-
-          {MENU_ITEMS.map((item) => (
+        <View style={styles.modalRoot}>
+          {/* Fading backdrop */}
+          <Animated.View style={[styles.backdrop, { opacity: fade }]}>
             <TouchableOpacity
-              key={item.route}
-              style={styles.menuItem}
-              onPress={() => navigateTo(item.route)}
+              style={styles.backdropTouch}
+              activeOpacity={1}
+              onPress={closeMenu}
+              accessibilityLabel="Close menu"
+            />
+          </Animated.View>
+
+          {/* Sliding panel (right 70%) */}
+          <Animated.View
+            style={[
+              styles.menu,
+              {
+                paddingTop: 12 + (windowInsets?.top ?? 0),
+                paddingBottom: 12 + (windowInsets?.bottom ?? 0),
+                transform: [{ translateX: slide }],
+              },
+            ]}
+          >
+            {/* Close */}
+            <TouchableOpacity
+              style={styles.closeButton}
+              hitSlop={HIT_SLOP}
+              onPress={closeMenu}
+              accessibilityRole="button"
+              accessibilityLabel="Close menu"
             >
-              <Text style={styles.menuText}>{item.label}</Text>
+              <Image style={styles.closeIcon} source={require('../../assets/close.png')} />
             </TouchableOpacity>
-          ))}
-        </Animated.View>
+
+            {/* Brand header */}
+            <View style={styles.menuHeader}>
+              <Text style={styles.menuBrand}>Citri Hub</Text>
+              <Text style={styles.menuSubtitle}>ICAR-CCRI · Agri-Business Incubation Centre</Text>
+            </View>
+
+            {/* Items (current screen highlighted) */}
+            <View style={styles.menuList}>
+              {MENU_ITEMS.map((item, index) => {
+                const active = route?.name === item.route;
+                return (
+                  <TouchableOpacity
+                    key={item.route}
+                    style={[
+                      styles.menuItem,
+                      index === MENU_ITEMS.length - 1 && styles.menuItemLast,
+                      active && styles.menuItemActive,
+                    ]}
+                    activeOpacity={0.6}
+                    onPress={() => navigateTo(item.route)}
+                  >
+                    {active && <View style={styles.activeBar} />}
+                    <Text style={[styles.menuText, active && styles.menuTextActive]}>
+                      {item.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
+            {/* Footer */}
+            <View style={styles.menuFooter}>
+              <Text style={styles.menuFooterText}>
+                © ICAR-Central Citrus Research Institute, Nagpur
+              </Text>
+            </View>
+          </Animated.View>
+        </View>
       </Modal>
     </>
   );
 };
 
+const ORANGE = '#EC7E1C';
+
 const styles = StyleSheet.create({
   statusBarPad: {
-    backgroundColor: '#EC7E1C', // keeps the orange painted behind the status bar
+    backgroundColor: ORANGE, // keeps the orange painted behind the status bar
   },
   bar: {
     height: 54,
-    backgroundColor: '#EC7E1C',
+    backgroundColor: ORANGE,
     flexDirection: 'row',
     alignItems: 'center',
     paddingLeft: 10,
@@ -190,44 +244,114 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textTransform: 'uppercase',
   },
-  modalOverlay: {
+
+  /* ── Menu modal ─────────────────────────────────────────── */
+  modalRoot: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
-  menuContainer: {
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+  },
+  backdropTouch: {
+    flex: 1,
+  },
+  menu: {
     position: 'absolute',
     top: 0,
     bottom: 0,
-    width: screenWidth * 0.7, // 70% of the screen width
+    left: 0,
+    width: screenWidth * 0.72,
+    marginLeft: screenWidth * 0.28,
     backgroundColor: '#FFFFFF',
-    paddingBottom: 24,
-    paddingHorizontal: 10,
+    borderTopRightRadius: 0,
+    borderTopLeftRadius: 24,
+    borderBottomLeftRadius: 24,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOffset: { width: -4, height: 0 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 16,
   },
   closeButton: {
+    position: 'absolute',
+    top: 12 + (initialWindowMetrics?.insets?.top ?? 0),
+    right: 12,
     width: 40,
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    alignSelf: 'flex-end',
-    marginRight: 5,
+    zIndex: 2,
   },
   closeIcon: {
     width: 26,
     height: 26,
     resizeMode: 'contain',
   },
+  menuHeader: {
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 14,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#E5E5E5',
+  },
+  menuBrand: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: ORANGE,
+    letterSpacing: 0.3,
+  },
+  menuSubtitle: {
+    marginTop: 2,
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#8A8A8A',
+    letterSpacing: 0.2,
+  },
+  menuList: {
+    flex: 1,
+  },
   menuItem: {
-    paddingVertical: 12,
-    paddingHorizontal: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 13,
+    paddingHorizontal: 20,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#EEEEEE',
+  },
+  menuItemLast: {
+    borderBottomWidth: 0,
+  },
+  menuItemActive: {
+    backgroundColor: '#FDF1E7',
+  },
+  activeBar: {
+    position: 'absolute',
+    left: 0,
+    top: 8,
+    bottom: 8,
+    width: 4,
+    borderRadius: 2,
+    backgroundColor: ORANGE,
   },
   menuText: {
-    fontSize: 16,
+    fontSize: 15.5,
     fontWeight: '600',
     color: '#333333',
+  },
+  menuTextActive: {
+    color: ORANGE,
+    fontWeight: '800',
+  },
+  menuFooter: {
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: '#E5E5E5',
+  },
+  menuFooterText: {
+    fontSize: 10.5,
+    color: '#9B9B9B',
+    fontWeight: '500',
   },
 });
