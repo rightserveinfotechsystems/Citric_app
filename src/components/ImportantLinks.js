@@ -1,98 +1,51 @@
 import React from 'react';
-import { View, Text, StyleSheet, Linking, Alert, ScrollView, TouchableOpacity, ImageBackground } from 'react-native';
-import { TopNavbar } from './common/TopNavbar';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Text, StyleSheet, Linking, Alert, TouchableOpacity, View } from 'react-native';
+import { ScreenShell } from './common/ScreenShell';
+import { importantLinksScreen } from '../data/importantLinks';
 
-const links = [
-  {
-    title: 'Ministry of Agriculture and Farmers Welfare, Govt. of India',
-    url: 'https://agriwelfare.gov.in/',
-  },
-  {
-    title: 'Ministry of Skill Development and Entrepreneurship, Govt. of India',
-    url: 'https://www.msde.gov.in/',
-  },
-  {
-    title: 'Indian Council of Agricultural Research',
-    url: 'https://www.icar.org.in/',
-  },
-  {
-    title: 'Startup India',
-    url: 'https://www.startupindia.gov.in/',
-  },
-  {
-    title: 'ICAR-IP&TM Unit',
-    url: 'https://www.icar.org.in/intellectual-property-technology-management-iptm-unit',
-  },
-  {
-    title: 'ICAR-Central Citrus Research Institute',
-    url: 'https://ccri.icar.gov.in/',
-  },
-];
-
+async function openLink(url) {
+  try {
+    await Linking.openURL(url);
+  } catch {
+    Alert.alert(`Unable to open URL: ${url}`);
+  }
+}
 
 export default function ImportantLinks() {
-  const insets = useSafeAreaInsets();
-
-  
-  const openLink = async (url) => {
-    // Check if the link can be opened
-    const supported = await Linking.openURL(url);
-    if (supported) {
-      await Linking.openURL(url);
-    } else {
-      Alert.alert(`Unable to open URL: ${url}`);
-    }
-  };
-
   return (
-    <View style={{flex: 1, backgroundColor: "white"}}>
-      <TopNavbar titleName="Important Links" />
-      <ImageBackground source={require("../assets/BackgroundforImportantLinks.jpg")} style={styles.container}  >
-      <ScrollView style={{marginBottom:"40"}} contentContainerStyle={{ paddingBottom: insets.bottom }}>
-        {links.map((link, index) => (
-        <View key={index} style={styles.reachBox}>
+    <ScreenShell title={importantLinksScreen.title} background={importantLinksScreen.background}>
+      {importantLinksScreen.links.map((link) => (
+        <View key={link.url} style={styles.reachBox}>
           <Text style={styles.headTitle}>{link.title}</Text>
           <TouchableOpacity onPress={() => openLink(link.url)}>
-            <Text style={styles.title}>{link.url}</Text>
+            <Text style={styles.linkText}>{link.url}</Text>
           </TouchableOpacity>
         </View>
       ))}
-        
-      </ScrollView>
-      </ImageBackground>
-      
-    </View>
+    </ScreenShell>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    // alignItems: "center",
-    resizeMode: "contain",
-    flex:1,
-  },
   reachBox: {
     marginLeft: 20,
-    marginTop: 30
+    marginTop: 30,
   },
   headTitle: {
     fontSize: 17,
     fontWeight: 'bold',
     color: 'black',
-    width: "90%",
-    marginHorizontal: "5%",
-    textAlign: "center"
+    width: '90%',
+    marginHorizontal: '5%',
+    textAlign: 'center',
   },
-  title: {
+  linkText: {
     fontSize: 17,
     fontWeight: '400',
     color: 'blue',
-    textDecorationLine: "underline",
-    textAlign: "center",
-    width: "80%",
-    marginHorizontal: "10%",
-    textAlign: "center"
+    textDecorationLine: 'underline',
+    textAlign: 'center',
+    width: '80%',
+    marginHorizontal: '10%',
   },
-})
+});

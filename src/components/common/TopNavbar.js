@@ -12,7 +12,23 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets, initialWindowMetrics } from 'react-native-safe-area-context';
 
-const { width: screenWidth } = Dimensions.get('window'); // Get screen width dynamically
+const { width: screenWidth } = Dimensions.get('window');
+
+/** Slide-in menu, data-driven (add a screen here and it appears in the menu). */
+const MENU_ITEMS = [
+  { label: 'Genesis', route: 'Genesis' },
+  { label: 'Announcement', route: 'Announcement' },
+  { label: 'Apply For Incubation', route: 'ApplyForIncubation' },
+  { label: 'Criteria For Selection', route: 'CriteriaForSelection' },
+  { label: 'Incubation Module', route: 'IncubationModule' },
+  { label: 'Potencial Ventures', route: 'PotencialVentures' },
+  { label: 'Process Of Incubation', route: 'ProcessOfIncubation' },
+  { label: 'Important Links', route: 'ImportantLinks' },
+  { label: 'Reach Us', route: 'ReachUs' },
+  { label: 'About', route: 'About' },
+];
+
+const HIT_SLOP = { top: 8, bottom: 8, left: 8, right: 8 };
 
 export const TopNavbar = ({ titleName }) => {
   const navigation = useNavigation();
@@ -39,34 +55,54 @@ export const TopNavbar = ({ titleName }) => {
     }
   };
 
+  const navigateTo = (route) => {
+    toggleMenu();
+    navigation.navigate(route);
+  };
+
   return (
     <>
+      {/*
+        Alignment fix (all devices): the bar is a fixed-height row with alignItems:'center',
+        so the back arrow, title and hamburger are ALWAYS vertically centered — no more
+        hand-tuned marginTop offsets that drift across devices/densities.
+        The orange background extends behind the status bar (paddingTop: insets.top).
+      */}
       <View
         style={[
-          topNavbarStyle.navbarTop,
+          styles.statusBarPad,
           {
-            // Keep the bar painted behind the status bar while pushing its
-            // contents below the notch/Dynamic Island (iOS) or system bars
-            // (Android edge-to-edge, when enabled). Portrait Android today: 0 → unchanged.
             paddingTop: insets.top,
-            paddingLeft: 10 + insets.left,
+            paddingLeft: insets.left,
             paddingRight: insets.right,
           },
         ]}
       >
-        <TouchableOpacity style={{ width: 40, height: 50 }} onPress={() => navigation.goBack()}>
-          <Image
-            style={[topNavbarStyle.backIcon, { marginTop: insets.top > 0 ? 0 : 15 }]}
-            source={require("../../assets/backArrow.png")}
-          />
-        </TouchableOpacity>
-        <Text style={topNavbarStyle.navbarTopText}>{titleName}</Text>
-        <TouchableOpacity onPress={toggleMenu} style={topNavbarStyle.menuButton}>
-          <Image
-            style={topNavbarStyle.menuIcon}
-            source={require("../../assets/menu.png")} // Add a hamburger icon to your assets
-          />
-        </TouchableOpacity>
+        <View style={styles.bar}>
+          <TouchableOpacity
+            style={styles.iconButton}
+            hitSlop={HIT_SLOP}
+            onPress={() => navigation.goBack()}
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
+          >
+            <Image style={styles.backIcon} source={require('../../assets/backArrow.png')} />
+          </TouchableOpacity>
+
+          <Text numberOfLines={1} style={styles.titleText}>
+            {titleName}
+          </Text>
+
+          <TouchableOpacity
+            style={styles.iconButton}
+            hitSlop={HIT_SLOP}
+            onPress={toggleMenu}
+            accessibilityRole="button"
+            accessibilityLabel="Open menu"
+          >
+            <Image style={styles.menuIcon} source={require('../../assets/menu.png')} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Hamburger Menu Modal */}
@@ -76,174 +112,83 @@ export const TopNavbar = ({ titleName }) => {
         visible={menuVisible}
         onRequestClose={toggleMenu}
       >
-        <TouchableOpacity
-          style={topNavbarStyle.modalOverlay}
-          onPress={toggleMenu}
-        />
+        <TouchableOpacity style={styles.modalOverlay} onPress={toggleMenu} />
         <Animated.View
           style={[
-            topNavbarStyle.menuContainer,
+            styles.menuContainer,
             {
               // Modals render in a separate root (outside SafeAreaProvider), so we use
               // the static window metrics snapshot instead of the context hook.
-              paddingTop: 20 + (initialWindowMetrics?.insets?.top ?? 0),
+              paddingTop: 12 + (initialWindowMetrics?.insets?.top ?? 0),
               paddingLeft: 10 + (initialWindowMetrics?.insets?.left ?? 0),
             },
             { transform: [{ translateX: menuAnimation }] }, // Slide effect
           ]}
         >
-
           {/* Close Button */}
-          <TouchableOpacity
-            style={topNavbarStyle.closeButton}
-            onPress={toggleMenu}
-          >
+          <TouchableOpacity style={styles.closeButton} onPress={toggleMenu}>
             <Image
-              style={topNavbarStyle.closeIcon}
-              source={require("../../assets/close.png")} // Add a close icon to your assets
+              style={styles.closeIcon}
+              source={require('../../assets/close.png')}
             />
           </TouchableOpacity>
-          
-          <TouchableOpacity
-            style={topNavbarStyle.menuItem}
-            onPress={() => {
-              toggleMenu();
-              navigation.navigate('Home');
-            }}
-          >
-            <Text style={topNavbarStyle.menuText}>Home</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity
-            style={topNavbarStyle.menuItem}
-            onPress={() => {
-              toggleMenu();
-              navigation.navigate('Genesis');
-            }}
-          >
-            <Text style={topNavbarStyle.menuText}>Genesis</Text>
-          </TouchableOpacity>
 
-          <TouchableOpacity
-            style={topNavbarStyle.menuItem}
-            onPress={() => {
-              toggleMenu();
-              navigation.navigate('Announcement');
-            }}
-          >
-            <Text style={topNavbarStyle.menuText}>Announcement</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={topNavbarStyle.menuItem}
-            onPress={() => {
-              toggleMenu();
-              navigation.navigate('ApplyForIncubation');
-            }}
-          >
-            <Text style={topNavbarStyle.menuText}>Apply For Incubation</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={topNavbarStyle.menuItem}
-            onPress={() => {
-              toggleMenu();
-              navigation.navigate('CriteriaForSelection');
-            }}
-          >
-            <Text style={topNavbarStyle.menuText}>Criteria For Selection</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={topNavbarStyle.menuItem}
-            onPress={() => {
-              toggleMenu();
-              navigation.navigate('IncubationModule');
-            }}
-          >
-            <Text style={topNavbarStyle.menuText}>IncubationModule</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={topNavbarStyle.menuItem}
-            onPress={() => {
-              toggleMenu();
-              navigation.navigate('PotencialVentures');
-            }}
-          >
-            <Text style={topNavbarStyle.menuText}>Potencial Ventures</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={topNavbarStyle.menuItem}
-            onPress={() => {
-              toggleMenu();
-              navigation.navigate('ProcessOfIncubation');
-            }}
-          >
-            <Text style={topNavbarStyle.menuText}>Process Of Incubation</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={topNavbarStyle.menuItem}
-            onPress={() => {
-              toggleMenu();
-              navigation.navigate('ReachUs');
-            }}
-          >
-            <Text style={topNavbarStyle.menuText}>Reach Us</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={topNavbarStyle.menuItem}
-            onPress={() => {
-              toggleMenu();
-              navigation.navigate('ImportantLinks');
-            }}
-          >
-            <Text style={topNavbarStyle.menuText}>Important Links</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={topNavbarStyle.menuItem}
-            onPress={() => {
-              toggleMenu();
-              navigation.navigate('About');
-            }}
-          >
-            <Text style={topNavbarStyle.menuText}>About</Text>
-          </TouchableOpacity>
+          {MENU_ITEMS.map((item) => (
+            <TouchableOpacity
+              key={item.route}
+              style={styles.menuItem}
+              onPress={() => navigateTo(item.route)}
+            >
+              <Text style={styles.menuText}>{item.label}</Text>
+            </TouchableOpacity>
+          ))}
         </Animated.View>
       </Modal>
     </>
   );
 };
 
-const topNavbarStyle = StyleSheet.create({
-  navbarTop: {
+const styles = StyleSheet.create({
+  statusBarPad: {
+    backgroundColor: '#EC7E1C', // keeps the orange painted behind the status bar
+  },
+  bar: {
+    height: 54,
     backgroundColor: '#EC7E1C',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: '1%',
     paddingLeft: 10,
+    paddingRight: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    elevation: 4,
   },
-  navbarTopText: {
-    color: 'white',
-    fontSize: 18,
-    marginLeft: '5%',
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
+  iconButton: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   backIcon: {
-    width: 25,
-    height: 25,
-    marginTop: 15,
-  },
-  menuButton: {
-    marginLeft: 'auto',
-    marginRight: 15,
+    width: 26,
+    height: 26,
+    resizeMode: 'contain',
   },
   menuIcon: {
-    width: 30,
-    height: 30,
+    width: 28,
+    height: 28,
+    resizeMode: 'contain',
+  },
+  titleText: {
+    flex: 1,
+    color: 'white',
+    fontSize: 18,
+    marginLeft: 8,
+    marginRight: 4,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
   },
   modalOverlay: {
     flex: 1,
@@ -255,7 +200,7 @@ const topNavbarStyle = StyleSheet.create({
     bottom: 0,
     width: screenWidth * 0.7, // 70% of the screen width
     backgroundColor: '#FFFFFF',
-    paddingVertical: 20,
+    paddingBottom: 24,
     paddingHorizontal: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -263,23 +208,26 @@ const topNavbarStyle = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-  menuItem: {
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-  },
-  menuText: {
-    fontSize: 19,
-    color: '#333',
-    fontWeight: 'bold',
-  },
   closeButton: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
     alignSelf: 'flex-end',
-    padding: 10,
+    marginRight: 5,
   },
   closeIcon: {
-    width: 22,
-    height: 22,
+    width: 26,
+    height: 26,
+    resizeMode: 'contain',
+  },
+  menuItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+  },
+  menuText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333333',
   },
 });
