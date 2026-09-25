@@ -22,6 +22,8 @@
     "ios": {
       "bundleIdentifier": "com.citric.app",
       "buildNumber": "8",
+      "supportsTablet": true,
+      "requireFullScreen": true,
       "infoPlist": {
         "CFBundleDisplayName": "Citri Hub",
         "NSAppTransportSecurity": { "NSAllowsArbitraryLoads": false, "NSAllowsLocalNetworking": true },
