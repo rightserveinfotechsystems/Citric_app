@@ -5,7 +5,8 @@ import axios from 'axios';
  * Base: https://citricbackend.rsinfotechsys.com  (routes under /application)
  *
  * getContacts() → GET /application/get-contacts
- *   Expected payload: Contact[] (mongoose model) — see src/data/contacts.js
+ *   Expected payload: Contact[] (mongoose model) — used ONLY by the Reach Us screen;
+ *   bundled fallback contacts live in src/components/ReachUs.js
  *   Suggested express route (backend):
  *     router.get('/get-contacts', async (_req, res) => {
  *       res.json(await Contact.find().sort({ displayOrder: 1 }).lean());
