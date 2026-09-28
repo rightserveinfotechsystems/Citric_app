@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Linking, Text, TouchableOpacity, View, Image, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ScreenShell } from '../components/common/ScreenShell';
+import { communication } from '../services/communication';
 
-/** Static screen content (bundled with the app — no API). */
+/**
+ * Screen content bundled with the app. Tiles/logos are static; `credits`
+ * is the DEFAULT — refreshed from GET /contacts/get-developer when reachable.
+ */
 const HOME = {
   backgroundColor: 'rgb(233 219 206)',
   logos: [
@@ -59,8 +63,54 @@ function toRows(tiles) {
   return rows;
 }
 
+/**
+ * Accepts { lead, coHeading, coLines } (directly or wrapped in data/developer/credits);
+ * partial payloads are merged over the bundled defaults; null if unusable.
+ */
+function normalizeCredits(payload) {
+  let d = payload;
+  for (let i = 0; i < 3 && d && typeof d === 'object'
+    && !Array.isArray(d.lead) && !Array.isArray(d.coLines); i += 1) {
+    d = d.data ?? d.developer ?? d.credits ?? null;
+  }
+  if (!d || typeof d !== 'object') return null;
+  const lead = Array.isArray(d.lead)
+    ? d.lead.filter((p) => p && typeof p.name === 'string').map((p) => ({
+        name: p.name,
+        role: typeof p.role === 'string' ? p.role : '',
+        ...(p.nameFirst === undefined ? {} : { nameFirst: !!p.nameFirst }),
+      }))
+    : null;
+  const coLines = Array.isArray(d.coLines)
+    ? d.coLines.filter((l) => typeof l === 'string')
+    : null;
+  if (!lead?.length && !coLines?.length) return null;
+  return {
+    lead: lead?.length ? lead : HOME.credits.lead,
+    coHeading: typeof d.coHeading === 'string' && d.coHeading ? d.coHeading : HOME.credits.coHeading,
+    coLines: coLines?.length ? coLines : HOME.credits.coLines,
+  };
+}
+
 export default function Home() {
   const navigation = useNavigation();
+  const [credits, setCredits] = useState(HOME.credits); // bundled defaults render instantly
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const response = await communication.getDeveloper();
+        const normalized = normalizeCredits(response?.data);
+        if (active && normalized) setCredits(normalized); // API fails → keep defaults
+      } catch {
+        /* offline / endpoint missing → bundled credits stay */
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <ScreenShell
@@ -91,22 +141,22 @@ export default function Home() {
       ))}
 
       <View style={styles.creditsBox}>
-        <Text style={styles.headText}>{HOME.credits.leadHeading}</Text>
-        {HOME.credits.lead.map((person) =>
+        <Text style={styles.headText}>{credits.leadHeading}</Text>
+        {credits.lead.map((person, i) =>
           person.nameFirst ? (
-            <Text key={person.name} style={styles.redText}>
+            <Text key={`lead-${i}`} style={styles.redText}>
               <Text style={styles.normalText} /> {person.name}{' '}
               <Text style={styles.normalText}>{person.role}</Text>
             </Text>
           ) : (
-            <Text key={person.name} style={styles.redText}>
+            <Text key={`lead-${i}`} style={styles.redText}>
               {person.name} <Text style={styles.normalText}>{person.role}</Text>{' '}
             </Text>
           ),
         )}
-        <Text style={[styles.headText, styles.spacedTop]}>{HOME.credits.coHeading}</Text>
-        {HOME.credits.coLines.map((line) => (
-          <Text key={line} style={styles.normalText}>{line}</Text>
+        <Text style={[styles.headText, styles.spacedTop]}>{credits.coHeading}</Text>
+        {credits.coLines.map((line, i) => (
+          <Text key={`co-${i}`} style={styles.normalText}>{line}</Text>
         ))}
         {HOME.credits.orgLines.map((line) => (
           <Text key={line} style={styles.redText}>{line}</Text>

@@ -10,7 +10,7 @@ const LOGO_ICCRI = require('../assets/iccri.png');
 
 /**
  * The ONLY screen that fetches from the API:
- *   GET /application/get-contacts  (Contact[] — the mongoose model, sorted by displayOrder)
+ *   GET /contacts/get-contacts  (Contact[] — the mongoose model, sorted by displayOrder)
  * Until the endpoint responds (or if it fails), the bundled fallback below is shown,
  * so the screen never regresses visually. Pull-to-refresh re-fetches.
  */
