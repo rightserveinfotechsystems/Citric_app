@@ -65,10 +65,11 @@ export function ScreenShell({
     backgroundColor ? { backgroundColor } : null,
   ];
 
-  // NOTE: `alignItems:'center'` on a ScrollView's contentContainer triggers a long-standing
-  // Android measuring bug (children with % widths / maxWidth collapse or overflow — content
-  // renders clipped or blank). Centering is applied on an inner normal View instead, where
-  // measurement is well-defined on every platform.
+  // NOTE: `centered` is intentionally a NO-OP now. `alignItems:'center'` anywhere in a
+  // ScrollView's measure chain triggers a long-standing Android bug (children widths
+  // collapse/overflow — content renders clipped or blank; it broke Genesis on devices).
+  // Every screen's content self-centers via width % + marginHorizontal, so the shell
+  // must NOT center. The prop is kept so existing call sites don't break.
   const scroll = scrollEnabled ? (
     <ScrollView
       contentContainerStyle={[
@@ -87,11 +88,11 @@ export function ScreenShell({
         ) : undefined
       }
     >
-      <View style={[styles.contentWrap, centered && styles.centered]}>{children}</View>
+      <View style={styles.contentWrap}>{children}</View>
     </ScrollView>
   ) : (
     <View style={[styles.flex, chromeInsets, contentStyle]}>
-      <View style={[styles.contentWrap, centered && styles.centered]}>{children}</View>
+      <View style={styles.contentWrap}>{children}</View>
     </View>
   );
 
@@ -131,9 +132,6 @@ const styles = StyleSheet.create({
   },
   contentWrap: {
     width: '100%',
-  },
-  centered: {
-    alignItems: 'center',
   },
   flex: {
     flex: 1,

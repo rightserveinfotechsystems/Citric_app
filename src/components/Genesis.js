@@ -18,7 +18,7 @@ const GENESIS = {
 
 export default function Genesis() {
   return (
-    <ScreenShell title={GENESIS.title} background={GENESIS.background} centered>
+    <ScreenShell title={GENESIS.title} background={GENESIS.background}>
       <BulletList items={GENESIS.items} variant="plain" />
     </ScreenShell>
   );
