@@ -3,16 +3,26 @@
     "name": "Citri Hub",
     "slug": "citric-app",
     "version": "2.1.0",
-    "platforms": ["ios", "android"],
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "icon": "./src/assets/citriLogo.png",
     "plugins": [
       "expo-asset",
-      ["expo-splash-screen", { "image": "./src/assets/citriLogo.png", "imageWidth": 200, "backgroundColor": "#ffffff" }],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./src/assets/citriLogo.png",
+          "imageWidth": 200,
+          "backgroundColor": "#ffffff"
+        }
+      ],
       "./plugins/withCitricHubConfig.js"
     ],
     "android": {
       "package": "com.citric_app",
-      "versionCode": 8,
+      "versionCode": 10,
       "allowBackup": false,
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/citriLogo.png",
@@ -26,13 +36,26 @@
       "requireFullScreen": true,
       "infoPlist": {
         "CFBundleDisplayName": "Citri Hub",
-        "NSAppTransportSecurity": { "NSAllowsArbitraryLoads": false, "NSAllowsLocalNetworking": true },
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": false,
+          "NSAllowsLocalNetworking": true
+        },
         "NSLocationWhenInUseUsageDescription": "",
-        "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait", "UIInterfaceOrientationLandscapeLeft", "UIInterfaceOrientationLandscapeRight"]
+        "UISupportedInterfaceOrientations": [
+          "UIInterfaceOrientationPortrait",
+          "UIInterfaceOrientationLandscapeLeft",
+          "UIInterfaceOrientationLandscapeRight"
+        ]
       }
     },
-    "updates": { "url": "https://u.expo.dev/8836b1f1-925f-472d-b83d-1837b1952cbf" },
+    "updates": {
+      "url": "https://u.expo.dev/8836b1f1-925f-472d-b83d-1837b1952cbf"
+    },
     "runtimeVersion": "2.1.0",
-    "extra": { "eas": { "projectId": "8836b1f1-925f-472d-b83d-1837b1952cbf" } }
+    "extra": {
+      "eas": {
+        "projectId": "8836b1f1-925f-472d-b83d-1837b1952cbf"
+      }
+    }
   }
 }
