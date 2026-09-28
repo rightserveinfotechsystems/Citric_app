@@ -4,7 +4,6 @@ import { ScreenShell } from './common/ScreenShell';
 import { Controller, useForm } from 'react-hook-form';
 import CustomTextInput from './common/CustomTextInput';
 import moment from 'moment';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { communication } from '../services/communication';
 import { useNavigation } from '@react-navigation/native';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
@@ -26,6 +25,58 @@ function CalendarIcon() {
       <View style={styles.calTopBar} />
       <View style={styles.calGrid}>
         {[0, 1, 2, 3, 4, 5].map((i) => <View key={i} style={styles.calDot} />)}
+      </View>
+    </View>
+  );
+}
+
+const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'];
+
+/** Pure-JS month calendar for the iOS date sheet. UIDatePicker's inline mode collapses
+ * inside transparent Modals on modern iOS (renders a single cell), so we render our own
+ * grid — deterministic on every iOS version and styled to match the form. */
+function MonthGrid({ value, onChange }) {
+  const [visible, setVisible] = useState(new Date(value.getFullYear(), value.getMonth(), 1));
+  const weekDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  const startDow = new Date(visible.getFullYear(), visible.getMonth(), 1).getDay();
+  const daysInMonth = new Date(visible.getFullYear(), visible.getMonth() + 1, 0).getDate();
+  const cells = [];
+  for (let i = 0; i < startDow; i += 1) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d += 1) cells.push(d);
+  while (cells.length % 7 !== 0) cells.push(null);
+  const isOn = (d) => value.getFullYear() === visible.getFullYear()
+    && value.getMonth() === visible.getMonth() && value.getDate() === d;
+  const shift = (delta) => setVisible(new Date(visible.getFullYear(), visible.getMonth() + delta, 1));
+  return (
+    <View>
+      <View style={styles.monthHeader}>
+        <TouchableOpacity onPress={() => shift(-1)} hitSlop={10} accessibilityLabel="Previous month">
+          <Text style={styles.monthArrow}>‹</Text>
+        </TouchableOpacity>
+        <Text style={styles.monthLabel}>{MONTH_NAMES[visible.getMonth()]} {visible.getFullYear()}</Text>
+        <TouchableOpacity onPress={() => shift(1)} hitSlop={10} accessibilityLabel="Next month">
+          <Text style={styles.monthArrow}>›</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.weekRow}>
+        {weekDays.map((d, i) => <Text key={`w${i}`} style={styles.weekDay}>{d}</Text>)}
+      </View>
+      <View style={styles.dayGrid}>
+        {cells.map((d, i) => (
+          <View key={`c${i}`} style={styles.dayCell}>
+            {d ? (
+              <TouchableOpacity
+                onPress={() => onChange(new Date(visible.getFullYear(), visible.getMonth(), d))}
+                style={[styles.dayBtn, isOn(d) && styles.dayBtnOn]}
+                accessibilityRole="button"
+                accessibilityLabel={`${MONTH_NAMES[visible.getMonth()]} ${d}`}
+              >
+                <Text style={[styles.dayText, isOn(d) && styles.dayTextOn]}>{d}</Text>
+              </TouchableOpacity>
+            ) : null}
+          </View>
+        ))}
       </View>
     </View>
   );
@@ -479,12 +530,7 @@ export default function ApplyForIncubation() {
                 <View style={styles.pickerBackdrop}>
                   <TouchableOpacity style={styles.pickerBackdropTouch} activeOpacity={1} onPress={() => setShowDobPicker(false)} />
                   <View style={styles.pickerSheet}>
-                    <DateTimePicker
-                      value={iosTempDate}
-                      mode="date"
-                      display="inline"
-                      onValueChange={(_event, date) => { if (date) setIosTempDate(date); }}
-                    />
+                    <MonthGrid value={iosTempDate} onChange={setIosTempDate} />
                     <View style={styles.pickerSheetButtons}>
                       <TouchableOpacity
                         style={[styles.pickerSheetBtn, styles.pickerSheetBtnCancel]}
@@ -1100,6 +1146,65 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     marginLeft: 10,
   },
+  monthHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  monthArrow: {
+    fontSize: 26,
+    lineHeight: 30,
+    color: '#1F1F1F',
+    paddingHorizontal: 10,
+  },
+  monthLabel: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#1F1F1F',
+  },
+  weekRow: {
+    flexDirection: 'row',
+    marginTop: 4,
+  },
+  weekDay: {
+    flex: 1,
+    textAlign: 'center',
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#8A8A8A',
+  },
+  dayGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 2,
+  },
+  dayCell: {
+    width: '14.28%',
+    alignItems: 'center',
+    marginVertical: 2,
+    height: 38,
+    justifyContent: 'center',
+  },
+  dayBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dayBtnOn: {
+    backgroundColor: '#EC7E1C',
+  },
+  dayText: {
+    fontSize: 15,
+    color: '#1F1F1F',
+  },
+  dayTextOn: {
+    color: '#FFFFFF',
+    fontWeight: '800',
+  },
   pickerBackdrop: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.45)',
@@ -1140,17 +1245,6 @@ const styles = StyleSheet.create({
     color: '#444444',
     fontWeight: '700',
     fontSize: 15,
-  },
-  iosPickerCard: {
-    width: '100%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#DDD5CC',
-    marginTop: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    alignItems: 'flex-start',
   },
   dateValue: {
     fontSize: 16,
