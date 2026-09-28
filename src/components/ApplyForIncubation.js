@@ -414,15 +414,15 @@ export default function ApplyForIncubation() {
           <Text style={[styles.label, { marginLeft: 18 }]}>5. Gender</Text>
           <View style={[styles.row, { marginLeft: 25, marginTop: 10, marginBottom: 5 }]}>
             <View style={styles.row}>
-              <Text style={styles.checkLabel}>Male</Text>
+              <Text style={styles.checkLabel} onPress={() => handleGenderSelect('Male')}>Male</Text>
               <CheckBox checked={selectedGender === 'Male'} onPress={() => handleGenderSelect('Male')} />
             </View>
             <View style={styles.row}>
-              <Text style={styles.checkLabel}>Female</Text>
+              <Text style={styles.checkLabel} onPress={() => handleGenderSelect('Female')}>Female</Text>
               <CheckBox checked={selectedGender === 'Female'} onPress={() => handleGenderSelect('Female')} />
             </View>
             <View style={styles.row}>
-              <Text style={styles.checkLabel}>Other</Text>
+              <Text style={styles.checkLabel} onPress={() => handleGenderSelect('Other')}>Other</Text>
               <CheckBox checked={selectedGender === 'Other'} onPress={() => handleGenderSelect('Other')} />
             </View>
           </View>
@@ -452,12 +452,17 @@ export default function ApplyForIncubation() {
               <CalendarIcon />
             </TouchableOpacity>
             {Platform.OS === "ios" && showDobPicker && (
-              <DateTimePicker
-                value={pickedDOB ? new Date(pickedDOB) : new Date(2000, 0, 1)}
-                mode="date"
-                display="inline"
-                onValueChange={(_event, date) => { if (date) setPickedDOB(date); }}
-              />
+              <View style={styles.iosPickerCard}>
+                <DateTimePicker
+                  value={pickedDOB ? new Date(pickedDOB) : new Date(2000, 0, 1)}
+                  mode="date"
+                  display="compact"
+                  onValueChange={(event, date) => {
+                    if (event?.type === "set" && date) setPickedDOB(date);
+                    setShowDobPicker(false); // close after pick or cancel
+                  }}
+                />
+              </View>
             )}
             {/* </View> */}
 
@@ -499,19 +504,19 @@ export default function ApplyForIncubation() {
           <Text style={[styles.label, { marginLeft: 18, fontWeight: "700" }]}>9. Category</Text>
           <View style={[styles.row, { marginLeft: 25, marginTop: 10, marginBottom: 5 }]}>
             <View style={styles.row}>
-              <Text style={styles.checkLabel}>ST</Text>
+              <Text style={styles.checkLabel} onPress={() => handleCategorySelect('ST')}>ST</Text>
               <CheckBox checked={selectedCategory === 'ST'} onPress={() => handleCategorySelect('ST')} />
             </View>
             <View style={styles.row}>
-              <Text style={styles.checkLabel}>SC</Text>
+              <Text style={styles.checkLabel} onPress={() => handleCategorySelect('SC')}>SC</Text>
               <CheckBox checked={selectedCategory === 'SC'} onPress={() => handleCategorySelect('SC')} />
             </View>
             <View style={styles.row}>
-              <Text style={styles.checkLabel}>OBC</Text>
+              <Text style={styles.checkLabel} onPress={() => handleCategorySelect('OBC')}>OBC</Text>
               <CheckBox checked={selectedCategory === 'OBC'} onPress={() => handleCategorySelect('OBC')} />
             </View>
             <View style={styles.row}>
-              <Text style={styles.checkLabel}>Gen</Text>
+              <Text style={styles.checkLabel} onPress={() => handleCategorySelect('Gen')}>Gen</Text>
               <CheckBox checked={selectedCategory === 'Gen'} onPress={() => handleCategorySelect('Gen')} />
             </View>
           </View>
@@ -519,11 +524,11 @@ export default function ApplyForIncubation() {
           <Text style={[styles.label, { marginLeft: 18, fontWeight: "700" }]}>10. Whether belongs to Below Poverty Line or Differently Abled* </Text>
           <View style={[styles.row, { marginLeft: 25, marginTop: 10, marginBottom: 5 }]}>
             <View style={styles.row}>
-              <Text style={styles.checkLabel}>Yes</Text>
+              <Text style={styles.checkLabel} onPress={() => handlePovertySelect('Yes')}>Yes</Text>
               <CheckBox checked={selectedPoverty === 'Yes'} onPress={() => handlePovertySelect('Yes')} />
             </View>
             <View style={styles.row}>
-              <Text style={styles.checkLabel}>No</Text>
+              <Text style={styles.checkLabel} onPress={() => handlePovertySelect('No')}>No</Text>
               <CheckBox checked={selectedPoverty === 'No'} onPress={() => handlePovertySelect('No')} />
             </View>
           </View>
@@ -533,11 +538,11 @@ export default function ApplyForIncubation() {
               <Text style={[styles.label, { marginLeft: 18, fontWeight: "700" }]}>If yes, click on the appropriate box</Text>
               <View style={[styles.row, { marginLeft: 25, marginTop: 10, marginBottom: 5 }]}>
                 <View style={styles.row}>
-                  <Text style={styles.checkLabel}>BPL</Text>
+                  <Text style={styles.checkLabel} onPress={() => handlePovertyYesSelect('BPL')}>BPL</Text>
                   <CheckBox checked={selectedPovertyYes === 'BPL'} onPress={() => handlePovertyYesSelect('BPL')} />
                 </View>
                 <View style={styles.row}>
-                  <Text style={styles.checkLabel}>DA</Text>
+                  <Text style={styles.checkLabel} onPress={() => handlePovertyYesSelect('DA')}>DA</Text>
                   <CheckBox checked={selectedPovertyYes === 'DA'} onPress={() => handlePovertyYesSelect('DA')} />
                 </View>
               </View>
@@ -745,43 +750,43 @@ export default function ApplyForIncubation() {
           <View style={{ flexDirection: "column" }}>
             <View style={[styles.row, { marginLeft: 20 }]}>
               <CheckBox checked={selectedRequired.shootTrip} onPress={() => handleRequiredSelect('Shoot-tip Grafting (STG)')} />
-              <Text style={styles.checkLabel}>Shoot-tip Grafting (STG)</Text>
+              <Text style={styles.checkLabel} onPress={() => handleRequiredSelect('Shoot-tip Grafting (STG)')}>Shoot-tip Grafting (STG)</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
               <CheckBox checked={selectedRequired.microBudding} onPress={() => handleRequiredSelect('Micro-budding')} />
-              <Text style={styles.checkLabel}>Micro-budding</Text>
+              <Text style={styles.checkLabel} onPress={() => handleRequiredSelect('Micro-budding')}>Micro-budding</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
               <CheckBox checked={selectedRequired.nurseryTechnique} onPress={() => handleRequiredSelect('Containerized Nursery Technique')} />
-              <Text style={styles.checkLabel}>Containerized Nursery Technique</Text>
+              <Text style={styles.checkLabel} onPress={() => handleRequiredSelect('Containerized Nursery Technique')}>Containerized Nursery Technique</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
               <CheckBox checked={selectedRequired.nurseryRetro} onPress={() => handleRequiredSelect('Retrofitting Nursery Technique')} />
-              <Text style={styles.checkLabel}>Retrofitting Nursery Technique</Text>
+              <Text style={styles.checkLabel} onPress={() => handleRequiredSelect('Retrofitting Nursery Technique')}>Retrofitting Nursery Technique</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
               <CheckBox checked={selectedRequired.citrusProduction} onPress={() => handleRequiredSelect('Commercial Citrus Production')} />
-              <Text style={styles.checkLabel}>Commercial Citrus Production</Text>
+              <Text style={styles.checkLabel} onPress={() => handleRequiredSelect('Commercial Citrus Production')}>Commercial Citrus Production</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
               <CheckBox checked={selectedRequired.bioformulation} onPress={() => handleRequiredSelect('Trichoderma Bioformulation Production')} />
-              <Text style={styles.checkLabel}>Trichoderma Bioformulation Production</Text>
+              <Text style={styles.checkLabel} onPress={() => handleRequiredSelect('Trichoderma Bioformulation Production')}>Trichoderma Bioformulation Production</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
               <CheckBox checked={selectedRequired.bioagent} onPress={() => handleRequiredSelect('Mallada desjardensi Bioagent Production')} />
-              <Text style={styles.checkLabel}>Mallada desjardensi Bioagent Production</Text>
+              <Text style={styles.checkLabel} onPress={() => handleRequiredSelect('Mallada desjardensi Bioagent Production')}>Mallada desjardensi Bioagent Production</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
               <CheckBox checked={selectedRequired.harvest} onPress={() => handleRequiredSelect('Citrus Post-harvest Management')} />
-              <Text style={styles.checkLabel}>Citrus Post-harvest Management </Text>
+              <Text style={styles.checkLabel} onPress={() => handleRequiredSelect('Citrus Post-harvest Management')}>Citrus Post-harvest Management </Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
               <CheckBox checked={selectedRequired.valueAddition} onPress={() => handleRequiredSelect('Citrus Processing and Value-addition')} />
-              <Text style={styles.checkLabel}>Citrus Processing and Value-addition</Text>
+              <Text style={styles.checkLabel} onPress={() => handleRequiredSelect('Citrus Processing and Value-addition')}>Citrus Processing and Value-addition</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
               <CheckBox checked={selectedRequired.prototype} onPress={() => handleRequiredSelect('I have my own business idea / prototype')} />
-              <Text style={styles.checkLabel}>I have my own business idea / prototype</Text>
+              <Text style={styles.checkLabel} onPress={() => handleRequiredSelect('I have my own business idea / prototype')}>I have my own business idea / prototype</Text>
             </View>
           </View>
           <Controller
@@ -803,62 +808,62 @@ export default function ApplyForIncubation() {
           <View style={{ flexDirection: "column", marginRight: 50 }}>
             <View style={[styles.row, { marginLeft: 20 }]}>
               <CheckBox checked={selectedExpected.transfer} onPress={() => handleExpectedSelect('Technology transfer including guidance in setting up the production/processing facility')} />
-              <Text style={styles.checkLabel}>Technology transfer including guidance in setting up the production/processing facility</Text>
+              <Text style={styles.checkLabel} onPress={() => handleExpectedSelect('Technology transfer including guidance in setting up the production/processing facility')}>Technology transfer including guidance in setting up the production/processing facility</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
               <CheckBox checked={selectedExpected.building} onPress={() => handleExpectedSelect('Capacity building and skill development')} />
-              <Text style={styles.checkLabel}>Capacity building and skill development</Text>
+              <Text style={styles.checkLabel} onPress={() => handleExpectedSelect('Capacity building and skill development')}>Capacity building and skill development</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
               <CheckBox checked={selectedExpected.mentoring} onPress={() => handleExpectedSelect('Scientific mentoring and technical consultancy')} />
-              <Text style={styles.checkLabel}>Scientific mentoring and technical consultancy</Text>
+              <Text style={styles.checkLabel} onPress={() => handleExpectedSelect('Scientific mentoring and technical consultancy')}>Scientific mentoring and technical consultancy</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
               <CheckBox checked={selectedExpected.businessplan} onPress={() => handleExpectedSelect('Preparation of business plan and/or techno-feasibility report')} />
-              <Text style={styles.checkLabel}>Preparation of business plan and/or techno-feasibility report</Text>
+              <Text style={styles.checkLabel} onPress={() => handleExpectedSelect('Preparation of business plan and/or techno-feasibility report')}>Preparation of business plan and/or techno-feasibility report</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
               <CheckBox checked={selectedExpected.citrusprocessing} onPress={() => handleExpectedSelect('Access to citrus processing plant')} />
-              <Text style={styles.checkLabel}>Access to citrus processing plant </Text>
+              <Text style={styles.checkLabel} onPress={() => handleExpectedSelect('Access to citrus processing plant')}>Access to citrus processing plant </Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
               <CheckBox checked={selectedExpected.services} onPress={() => handleExpectedSelect('Analytical services')} />
-              <Text style={styles.checkLabel}>Analytical services</Text>
+              <Text style={styles.checkLabel} onPress={() => handleExpectedSelect('Analytical services')}>Analytical services</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
               <CheckBox checked={selectedExpected.foodproducts} onPress={() => handleExpectedSelect('Prototype testing, validation and refinement for citrus-based food products')} />
-              <Text style={styles.checkLabel}>Prototype testing, validation and refinement for citrus-based food products</Text>
+              <Text style={styles.checkLabel} onPress={() => handleExpectedSelect('Prototype testing, validation and refinement for citrus-based food products')}>Prototype testing, validation and refinement for citrus-based food products</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
               <CheckBox checked={selectedExpected.citrusbased} onPress={() => handleExpectedSelect('Support in developing citrus-based food products or processes')} />
-              <Text style={styles.checkLabel}>Support in developing citrus-based food products or processes</Text>
+              <Text style={styles.checkLabel} onPress={() => handleExpectedSelect('Support in developing citrus-based food products or processes')}>Support in developing citrus-based food products or processes</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
               <CheckBox checked={selectedExpected.ecofriendly} onPress={() => handleExpectedSelect('Guidance in implementing eco-friendly and sustainable practices in the citrus domain')} />
-              <Text style={styles.checkLabel}>Guidance in implementing eco-friendly and sustainable practices in the citrus domain</Text>
+              <Text style={styles.checkLabel} onPress={() => handleExpectedSelect('Guidance in implementing eco-friendly and sustainable practices in the citrus domain')}>Guidance in implementing eco-friendly and sustainable practices in the citrus domain</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
               <CheckBox checked={selectedExpected.IPprotection} onPress={() => handleExpectedSelect('Assistance related to IP protection')} />
-              <Text style={styles.checkLabel}>Assistance related to IP protection</Text>
+              <Text style={styles.checkLabel} onPress={() => handleExpectedSelect('Assistance related to IP protection')}>Assistance related to IP protection</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
               <CheckBox checked={selectedExpected.developing} onPress={() => handleExpectedSelect('Support in developing effective sales strategies')} />
-              <Text style={styles.checkLabel}>Support in developing effective sales strategies</Text>
+              <Text style={styles.checkLabel} onPress={() => handleExpectedSelect('Support in developing effective sales strategies')}>Support in developing effective sales strategies</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
               <CheckBox checked={selectedExpected.designing} onPress={() => handleExpectedSelect('Logo designing and brand building')} />
-              <Text style={styles.checkLabel}>Logo designing and brand building</Text>
+              <Text style={styles.checkLabel} onPress={() => handleExpectedSelect('Logo designing and brand building')}>Logo designing and brand building</Text>
             </View>
           </View>
 
           <Text style={[styles.label, { marginLeft: 18, fontWeight: "700" }]}>15. Mode of Incubation</Text>
           <View style={[styles.row, { marginLeft: 25, marginTop: 10, marginBottom: 5 }]}>
             <View style={styles.row}>
-              <Text style={styles.checkLabel}>On-site</Text>
+              <Text style={styles.checkLabel} onPress={() => handleModeSelect('On-site')}>On-site</Text>
               <CheckBox checked={selectedMode === 'On-site'} onPress={() => handleModeSelect('On-site')} />
             </View>
             <View style={styles.row}>
-              <Text style={styles.checkLabel}>Off-site</Text>
+              <Text style={styles.checkLabel} onPress={() => handleModeSelect('Off-site')}>Off-site</Text>
               <CheckBox checked={selectedMode === 'Off-site'} onPress={() => handleModeSelect('Off-site')} />
             </View>
           </View>
@@ -866,18 +871,18 @@ export default function ApplyForIncubation() {
           <Text style={[styles.label, { marginLeft: 18, fontWeight: "700" }]}>16. Duration of Incubation</Text>
           <View style={[styles.row, { marginLeft: 25, marginTop: 10, marginBottom: 10 }]}>
             <View style={[styles.row]}>
-              <Text style={styles.checkLabel}>Upto 6 months  </Text>
+              <Text style={styles.checkLabel} onPress={() => handleDurationSelect('Up to 6 months')}>Upto 6 months  </Text>
               <CheckBox checked={selectedDuration === 'Up to 6 months'} onPress={() => handleDurationSelect('Up to 6 months')} />
             </View>
             <View style={styles.row}>
-              <Text style={styles.checkLabel}>Upto 1 year</Text>
+              <Text style={styles.checkLabel} onPress={() => handleDurationSelect('Up to 1 year')}>Upto 1 year</Text>
               <CheckBox checked={selectedDuration === 'Up to 1 year'} onPress={() => handleDurationSelect('Up to 1 year')} />
             </View>
 
           </View>
           <View style={[styles.row, { marginLeft: 20 }]}>
             <CheckBox checked={selectAgree} onPress={handleSelectAgree} />
-            <Text style={styles.checkLabel}>I hereby state that the above mentioned particulars are true, to the best of my/our knowledge. I also state that no relevant material fact has been suppressed while applying for enrollment in the CitriHub, ICAR-CCRI. I am aware of all the provisions given under the incubation process and abide by the decisions taken by CitriHub, ICAR-CCRI.
+            <Text style={styles.checkLabel} onPress={handleSelectAgree}>I hereby state that the above mentioned particulars are true, to the best of my/our knowledge. I also state that no relevant material fact has been suppressed while applying for enrollment in the CitriHub, ICAR-CCRI. I am aware of all the provisions given under the incubation process and abide by the decisions taken by CitriHub, ICAR-CCRI.
             </Text>
           </View>
           <View style={{ flexDirection: "row", width: "70%" }}>
@@ -948,6 +953,17 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 14,
     justifyContent: 'center',
+  },
+  iosPickerCard: {
+    width: '100%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#DDD5CC',
+    marginTop: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    alignItems: 'flex-start',
   },
   dateValue: {
     fontSize: 16,
@@ -1054,11 +1070,17 @@ const pickerSelectStyles = StyleSheet.create({
   // the picker itself must stay transparent, otherwise two boxes stack (Android overlap).
   inputIOS: {
     fontSize: 16,
+    minHeight: 46,
     paddingVertical: 12,
     paddingHorizontal: 12,
     borderWidth: 0,
     backgroundColor: 'transparent',
     color: '#1F1F1F',
+  },
+  iconContainer: {
+    right: 14,
+    top: 15,
+    color: '#6B6B6B',
   },
   inputAndroid: {
     fontSize: 16,
