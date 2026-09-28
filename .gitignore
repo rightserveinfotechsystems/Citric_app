@@ -78,6 +78,7 @@ yarn-error.log
 dist/
 web-build/
 # Secrets — never commit
+android/gradle.properties.local
 android/keystore.properties
 *.jks
 *.p8

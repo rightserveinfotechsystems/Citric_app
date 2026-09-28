@@ -27,7 +27,8 @@
     "credentials:android": "eas credentials --platform android",
     "credentials:ios": "eas credentials --platform ios",
     "devices": "eas device:create",
-    "clean:android": "cd android && gradlew clean"
+    "clean:android": "cd android && gradlew clean",
+    "start:clean": "expo start -c"
   },
   "dependencies": {
     "@react-native-community/datetimepicker": "9.1.0",
