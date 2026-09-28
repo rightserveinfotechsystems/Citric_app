@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Alert, TouchableOpacity, ActivityIndicator, Modal, Linking, Platform } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Alert, TouchableOpacity, ActivityIndicator, Modal, Linking, Platform } from 'react-native';
 import { ScreenShell } from './common/ScreenShell';
 import { Controller, useForm } from 'react-hook-form';
 import CustomTextInput from './common/CustomTextInput';
@@ -90,6 +90,7 @@ export default function ApplyForIncubation() {
   const [pickedDOB, setPickedDOB] = useState("");
   const [showDobPicker, setShowDobPicker] = useState(false);
   const [iosTempDate, setIosTempDate] = useState(new Date(2000, 0, 1));
+  const [iosSheet, setIosSheet] = useState(null); // { title, items, current, onSelect }
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
   const [selectAgree, setSelectAgree] = useState(false);
@@ -325,9 +326,9 @@ export default function ApplyForIncubation() {
           {errors.city && <Text style={styles.errorText}>{errors.city.message}</Text>}
 
           <Text style={[styles.label, { marginLeft: 15, fontWeight: "700" }]}>State*</Text>
-          <View style={styles.dropDownBox}>
-            <RNPickerSelect
-              // rules={{ required: 'State is required' }}
+<View style={styles.dropDownBox}>
+            {Platform.OS === "android" ? (
+              <RNPickerSelect
               onValueChange={handleStateChange}
               items={districtsArray.map((item) => ({
                 label: item.state,
@@ -336,10 +337,20 @@ export default function ApplyForIncubation() {
               style={pickerSelectStyles}
               placeholder={{ label: "Select a State...", value: null }}
             />
+            ) : (
+              <TouchableOpacity
+                style={styles.iosSelectBtn}
+                onPress={() => setIosSheet({ title: "Select State", items: districtsArray.map((item) => ({ label: item.state, value: item.state })), current: selectedState, onSelect: handleStateChange })}
+              >
+                <Text style={selectedState ? styles.dateValue : styles.datePlaceholder}>{selectedState || "Select a State..."}</Text>
+                <View style={styles.selectChevron} />
+              </TouchableOpacity>
+            )}
           </View>
           <Text style={[styles.label, { marginLeft: 15, fontWeight: "700" }]}>District*</Text>
-          <View style={styles.dropDownBox}>
-            <RNPickerSelect
+<View style={styles.dropDownBox}>
+            {Platform.OS === "android" ? (
+              <RNPickerSelect
               onValueChange={(value) => setSelectedDistrict(value)}
               items={districts.map((district) => ({
                 label: district,
@@ -348,6 +359,15 @@ export default function ApplyForIncubation() {
               style={pickerSelectStyles}
               placeholder={{ label: "Select a District...", value: null }}
             />
+            ) : (
+              <TouchableOpacity
+                style={styles.iosSelectBtn}
+                onPress={() => setIosSheet({ title: "Select District", items: districts.map((d) => ({ label: d, value: d })), current: selectedDistrict, onSelect: (value) => setSelectedDistrict(value) })}
+              >
+                <Text style={selectedDistrict ? styles.dateValue : styles.datePlaceholder}>{selectedDistrict || "Select a District..."}</Text>
+                <View style={styles.selectChevron} />
+              </TouchableOpacity>
+            )}
           </View>
 
           <Controller
@@ -464,7 +484,6 @@ export default function ApplyForIncubation() {
                       mode="date"
                       display="inline"
                       onValueChange={(_event, date) => { if (date) setIosTempDate(date); }}
-                      style={styles.iosCalendar}
                     />
                     <View style={styles.pickerSheetButtons}>
                       <TouchableOpacity
@@ -484,6 +503,36 @@ export default function ApplyForIncubation() {
                 </View>
               </Modal>
             )}
+
+            {/* iOS select — our own high-contrast option sheet (system wheel is unreadable) */}
+            <Modal visible={!!iosSheet} transparent animationType="slide" onRequestClose={() => setIosSheet(null)}>
+              <View style={styles.pickerBackdrop}>
+                <TouchableOpacity style={styles.pickerBackdropTouch} activeOpacity={1} onPress={() => setIosSheet(null)} />
+                <View style={styles.pickerSheet}>
+                  <Text style={styles.sheetTitle}>{iosSheet?.title}</Text>
+                  <ScrollView style={styles.sheetList}>
+                    {(iosSheet?.items ?? []).map((it, idx) => (
+                      <TouchableOpacity
+                        key={`${it.value}-${idx}`}
+                        style={[styles.sheetOption, iosSheet?.current === it.value && styles.sheetOptionActive]}
+                        onPress={() => { iosSheet?.onSelect(it.value); setIosSheet(null); }}
+                      >
+                        <Text style={[styles.sheetOptionText, iosSheet?.current === it.value && styles.sheetOptionTextActive]}>
+                          {it.label}
+                        </Text>
+                        {iosSheet?.current === it.value ? <Text style={styles.sheetCheck}>✓</Text> : null}
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                  <TouchableOpacity
+                    style={[styles.pickerSheetBtn, styles.pickerSheetBtnCancel, { alignSelf: 'flex-end', marginRight: 8, marginBottom: 2 }]}
+                    onPress={() => setIosSheet(null)}
+                  >
+                    <Text style={styles.pickerSheetBtnCancelText}>Cancel</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
             {/* </View> */}
 
           </View>
@@ -571,13 +620,23 @@ export default function ApplyForIncubation() {
 
 
           <Text style={[styles.label, { marginLeft: 15, fontWeight: "700" }]}>11. Highest Educational Qualification *</Text>
-          <View style={styles.dropDownBox}>
-            <RNPickerSelect
+<View style={styles.dropDownBox}>
+            {Platform.OS === "android" ? (
+              <RNPickerSelect
               onValueChange={(value) => setSelectedEducation(value)}
               items={educationArray}
               style={pickerSelectStyles}
               placeholder={{ label: "Select an option...", value: null }}
             />
+            ) : (
+              <TouchableOpacity
+                style={styles.iosSelectBtn}
+                onPress={() => setIosSheet({ title: "Highest Educational Qualification", items: educationArray, current: selectedEducation, onSelect: (value) => setSelectedEducation(value) })}
+              >
+                <Text style={selectedEducation ? styles.dateValue : styles.datePlaceholder}>{selectedEducation || "Select an option..."}</Text>
+                <View style={styles.selectChevron} />
+              </TouchableOpacity>
+            )}
           </View>
           {/* {errors.district && <Text style={styles.errorText}>{errors.district.message}</Text>} */}
 
@@ -600,13 +659,23 @@ export default function ApplyForIncubation() {
           {errors.disciplineForQualification && <Text style={styles.errorText}>{errors.disciplineForQualification.message}</Text>}
 
           <Text style={[styles.label, { marginLeft: 15, fontWeight: "700" }]}>12. Present Occupation*</Text>
-          <View style={styles.dropDownBox}>
-            <RNPickerSelect
+<View style={styles.dropDownBox}>
+            {Platform.OS === "android" ? (
+              <RNPickerSelect
               onValueChange={(value) => setSelectedOccupation(value)}
               items={occupationArray}
               style={pickerSelectStyles}
               placeholder={{ label: "Select an option...", value: null }}
             />
+            ) : (
+              <TouchableOpacity
+                style={styles.iosSelectBtn}
+                onPress={() => setIosSheet({ title: "Present Occupation", items: occupationArray, current: selectedOccupation, onSelect: (value) => setSelectedOccupation(value) })}
+              >
+                <Text style={selectedOccupation ? styles.dateValue : styles.datePlaceholder}>{selectedOccupation || "Select an option..."}</Text>
+                <View style={styles.selectChevron} />
+              </TouchableOpacity>
+            )}
           </View>
 
           {selectedOccupation === "Farmer" &&
@@ -974,6 +1043,63 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     justifyContent: 'center',
   },
+  iosSelectBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 12,
+    minHeight: 46,
+  },
+  selectChevron: {
+    width: 0,
+    height: 0,
+    borderLeftWidth: 6,
+    borderRightWidth: 6,
+    borderTopWidth: 8,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderTopColor: '#6B6B6B',
+    marginLeft: 8,
+  },
+  sheetTitle: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#1F1F1F',
+    paddingHorizontal: 16,
+    paddingTop: 14,
+    paddingBottom: 4,
+  },
+  sheetList: {
+    maxHeight: 420,
+  },
+  sheetOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#EEEEEE',
+  },
+  sheetOptionActive: {
+    backgroundColor: '#FDF1E7',
+  },
+  sheetOptionText: {
+    fontSize: 16,
+    color: '#1F1F1F',
+    flexShrink: 1,
+  },
+  sheetOptionTextActive: {
+    color: '#EC7E1C',
+    fontWeight: '800',
+  },
+  sheetCheck: {
+    color: '#EC7E1C',
+    fontSize: 16,
+    fontWeight: '900',
+    marginLeft: 10,
+  },
   pickerBackdrop: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.45)',
@@ -988,10 +1114,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     paddingBottom: 24,
     paddingHorizontal: 12,
-  },
-  iosCalendar: {
-    height: 320,
-    width: '100%',
   },
   pickerSheetButtons: {
     flexDirection: 'row',
