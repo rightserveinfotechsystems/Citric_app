@@ -22,7 +22,7 @@
     ],
     "android": {
       "package": "com.citric_app",
-      "versionCode": 10,
+      "versionCode": 15,
       "allowBackup": false,
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/adaptive-icon.png",

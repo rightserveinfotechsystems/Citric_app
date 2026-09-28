@@ -16,6 +16,7 @@ const { width: screenWidth } = Dimensions.get('window');
 
 /** Slide-in menu, data-driven (add a screen here and it appears in the menu). */
 const MENU_ITEMS = [
+  { label: 'Home', route: 'Home' },
   { label: 'Genesis', route: 'Genesis' },
   { label: 'Announcement', route: 'Announcement' },
   { label: 'Apply For Incubation', route: 'ApplyForIncubation' },
