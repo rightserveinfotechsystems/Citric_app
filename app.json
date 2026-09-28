@@ -31,7 +31,7 @@
     },
     "ios": {
       "bundleIdentifier": "com.citric.app",
-      "buildNumber": "8",
+      "buildNumber": "15",
       "supportsTablet": true,
       "requireFullScreen": true,
       "infoPlist": {
