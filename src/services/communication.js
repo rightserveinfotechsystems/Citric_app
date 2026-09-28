@@ -1,19 +1,7 @@
 import axios from 'axios';
 
-/**
- * Backend API layer — single place for every server call.
- * Base: https://citricbackend.rsinfotechsys.com  (routes under /application)
- *
- * getContacts() → GET /application/get-contacts
- *   Expected payload: Contact[] (mongoose model) — used ONLY by the Reach Us screen;
- *   bundled fallback contacts live in src/components/ReachUs.js
- *   Suggested express route (backend):
- *     router.get('/get-contacts', async (_req, res) => {
- *       res.json(await Contact.find().sort({ displayOrder: 1 }).lean());
- *     });
- *   Optional model extension for the location row: mapUrl: String, mapLabel: String
- */
-const serverUrl = 'https://citricbackend.rsinfotechsys.com';
+
+const serverUrl = "https://ch-backend.liveprosolutions.com";
 
 const client = axios.create({
   baseURL: serverUrl,
@@ -28,5 +16,5 @@ export const communication = {
   getAllAnnouncement: () => client.get('/application/getAnnouncementList'),
 
   /** Contact cards for the Reach Us screen (sorted by displayOrder server-side). */
-  getContacts: () => client.get('/application/get-contacts'),
+  getContacts: () => client.get('/contacts/get-contacts'),
 };

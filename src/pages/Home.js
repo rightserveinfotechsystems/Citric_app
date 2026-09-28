@@ -39,7 +39,7 @@ const HOME = {
     leadHeading: 'Lead Developers',
     lead: [
       { name: 'Dr. S. S. Roy', role: '(Principal Scientist)' },
-      { name: 'Dr. D. K. Ghosh', role: '(Director)', nameFirst: true },
+      { name: 'Dr. D. K. Ghosh', role: '(Formal Director)', nameFirst: true },
     ],
     coHeading: 'Co-Developers',
     coLines: [
