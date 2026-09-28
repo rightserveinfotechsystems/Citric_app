@@ -1,0 +1,7 @@
+# Force LF on checkout for files that bash/sh executes — Windows checkouts must
+# never inject CRLF (it broke the EAS iOS build: ".xcode.env: line 5: command not found")
+ios/.xcode.env text eol=lf
+*.sh text eol=lf
+*.command text eol=lf
+ios/Podfile text eol=lf
+gradlew text eol=lf
