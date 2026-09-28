@@ -46,7 +46,6 @@
     "react": "19.2.3",
     "react-hook-form": "^7.53.1",
     "react-native": "0.86.3",
-    "react-native-bouncy-checkbox": "^4.1.2",
     "react-native-gesture-handler": "~2.32.0",
     "react-native-picker-select": "^9.3.1",
     "react-native-reanimated": "4.5.1",

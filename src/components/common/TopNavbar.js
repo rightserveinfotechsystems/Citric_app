@@ -46,7 +46,7 @@ export const TopNavbar = ({ titleName }) => {
     setMenuVisible(true);
     Animated.parallel([
       Animated.timing(slide, {
-        toValue: screenWidth * 0.3, // panel occupies the right 70%
+        toValue: 0, // panel's natural position: right 72% of the screen
         duration: 300,
         useNativeDriver: false,
       }),
@@ -338,6 +338,7 @@ const styles = StyleSheet.create({
     fontSize: 15.5,
     fontWeight: '600',
     color: '#333333',
+    flexShrink: 1,
   },
   menuTextActive: {
     color: ORANGE,
