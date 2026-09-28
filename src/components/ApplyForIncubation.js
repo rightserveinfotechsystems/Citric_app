@@ -19,6 +19,18 @@ import { stateArray } from './common/stateArray';
 
 
 
+/** Dependency-free calendar icon (real Views — no icon font, no image asset). */
+function CalendarIcon() {
+  return (
+    <View style={styles.calIcon} accessibilityLabel="Calendar">
+      <View style={styles.calTopBar} />
+      <View style={styles.calGrid}>
+        {[0, 1, 2, 3, 4, 5].map((i) => <View key={i} style={styles.calDot} />)}
+      </View>
+    </View>
+  );
+}
+
 /** Dependency-free checkbox (BouncyCheckbox's icon needs vector-icons fonts that Expo
  * prebuild does not bundle here — the box itself never rendered). Same 24x24 footprint. */
 function CheckBox({ checked, onPress }) {
@@ -423,27 +435,28 @@ export default function ApplyForIncubation() {
                 Identical UX: styled box shows placeholder until a date is chosen; Android opens
                 the native dialog; iOS shows the inline calendar. */}
             <TouchableOpacity
-              style={[styles.dropDownBox, { width: "100%", marginLeft: -2, justifyContent: "center" }]}
+              style={[styles.dropDownBox, { width: "100%", marginLeft: -2, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }]}
               onPress={() => {
                 if (Platform.OS === "android") {
                   DateTimePickerAndroid.open({
                     value: pickedDOB ? new Date(pickedDOB) : new Date(2000, 0, 1),
                     mode: "date",
-                    onChange: (_event, date) => { if (date) setPickedDOB(date); },
+                    onValueChange: (_event, date) => { if (date) setPickedDOB(date); },
                   });
                 } else {
                   setShowDobPicker(true);
                 }
               }}
             >
-              <Text>{handleText()}</Text>
+              <Text style={pickedDOB ? styles.dateValue : styles.datePlaceholder}>{handleText()}</Text>
+              <CalendarIcon />
             </TouchableOpacity>
             {Platform.OS === "ios" && showDobPicker && (
               <DateTimePicker
                 value={pickedDOB ? new Date(pickedDOB) : new Date(2000, 0, 1)}
                 mode="date"
                 display="inline"
-                onChange={(_event, date) => { if (date) setPickedDOB(date); }}
+                onValueChange={(_event, date) => { if (date) setPickedDOB(date); }}
               />
             )}
             {/* </View> */}
@@ -935,6 +948,40 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 14,
     justifyContent: 'center',
+  },
+  dateValue: {
+    fontSize: 16,
+    color: '#1F1F1F',
+  },
+  datePlaceholder: {
+    fontSize: 16,
+    color: '#9E9A94',
+  },
+  calIcon: {
+    width: 20,
+    height: 20,
+    borderRadius: 4,
+    borderWidth: 1.5,
+    borderColor: '#EC7E1C',
+    backgroundColor: '#FFFFFF',
+  },
+  calTopBar: {
+    height: 5,
+    backgroundColor: '#EC7E1C',
+  },
+  calGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    marginTop: 3,
+    paddingHorizontal: 2,
+  },
+  calDot: {
+    width: 3,
+    height: 3,
+    borderRadius: 1.5,
+    backgroundColor: '#EC7E1C',
+    margin: 1,
   },
   checkLabel: {
     fontSize: 14.5,
