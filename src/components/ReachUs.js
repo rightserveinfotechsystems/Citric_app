@@ -17,12 +17,12 @@ const LOGO_ICCRI = require('../assets/iccri.png');
 
 const FALLBACK_CONTACTS = [
   {
-    name: 'Dr. Dilip Kumar Ghosh',
+    name: 'Dr. N. G. Patil',
     positions: ['Director'],
     institution: 'ICAR-Central Citrus Research Institute',
     address: 'Amravati Road, Nagpur – 440033, Maharashtra',
     phones: ['0712-2500813', '0712-2500249'],
-    emails: ['director.ccri@icar.gov.in'],
+    emails: ['director.ccri@icar.org.in'],
     phoneLabel: 'Phone',
     displayOrder: 1,
   },
