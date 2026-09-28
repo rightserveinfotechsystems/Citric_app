@@ -54,12 +54,12 @@ export function BulletList({ items, variant = 'plain', style }) {
   );
 }
 
-const baseRow = { flexDirection: 'row' };
+const baseRow = { flexDirection: 'row', width: '100%' };
 const baseTextColumn = { flexDirection: 'column', flex: 1 };
 
 const stylesByVariant = {
   plain: StyleSheet.create({
-    row: { ...baseRow, width: '90%', maxWidth: 560, marginTop: 10 },
+    row: { ...baseRow, paddingHorizontal: 18, marginTop: 10 },
     // body lineHeight 23 → first-line center 11.5 → dot 9px at marginTop 7
     dot: {
       width: 9,
@@ -78,7 +78,7 @@ const stylesByVariant = {
     },
   }),
   numbered: StyleSheet.create({
-    row: { ...baseRow, width: '85%', maxWidth: 560, marginHorizontal: '5%', marginTop: 10 },
+    row: { ...baseRow, paddingHorizontal: 18, marginTop: 10 },
     // marker and heading share lineHeight 24 → their first lines align on both platforms
     marker: {
       fontSize: 15,
