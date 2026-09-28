@@ -89,6 +89,7 @@ export default function ApplyForIncubation() {
 
   const [pickedDOB, setPickedDOB] = useState("");
   const [showDobPicker, setShowDobPicker] = useState(false);
+  const [iosTempDate, setIosTempDate] = useState(new Date(2000, 0, 1));
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
   const [selectAgree, setSelectAgree] = useState(false);
@@ -441,9 +442,11 @@ export default function ApplyForIncubation() {
                   DateTimePickerAndroid.open({
                     value: pickedDOB ? new Date(pickedDOB) : new Date(2000, 0, 1),
                     mode: "date",
+                    display: "calendar", // force the calendar view (some devices default to the clock)
                     onValueChange: (_event, date) => { if (date) setPickedDOB(date); },
                   });
                 } else {
+                  setIosTempDate(pickedDOB ? new Date(pickedDOB) : new Date(2000, 0, 1));
                   setShowDobPicker(true);
                 }
               }}
@@ -452,17 +455,34 @@ export default function ApplyForIncubation() {
               <CalendarIcon />
             </TouchableOpacity>
             {Platform.OS === "ios" && showDobPicker && (
-              <View style={styles.iosPickerCard}>
-                <DateTimePicker
-                  value={pickedDOB ? new Date(pickedDOB) : new Date(2000, 0, 1)}
-                  mode="date"
-                  display="compact"
-                  onValueChange={(event, date) => {
-                    if (event?.type === "set" && date) setPickedDOB(date);
-                    setShowDobPicker(false); // close after pick or cancel
-                  }}
-                />
-              </View>
+              <Modal transparent animationType="slide" onRequestClose={() => setShowDobPicker(false)}>
+                <View style={styles.pickerBackdrop}>
+                  <TouchableOpacity style={styles.pickerBackdropTouch} activeOpacity={1} onPress={() => setShowDobPicker(false)} />
+                  <View style={styles.pickerSheet}>
+                    <DateTimePicker
+                      value={iosTempDate}
+                      mode="date"
+                      display="inline"
+                      onValueChange={(_event, date) => { if (date) setIosTempDate(date); }}
+                      style={styles.iosCalendar}
+                    />
+                    <View style={styles.pickerSheetButtons}>
+                      <TouchableOpacity
+                        style={[styles.pickerSheetBtn, styles.pickerSheetBtnCancel]}
+                        onPress={() => setShowDobPicker(false)}
+                      >
+                        <Text style={styles.pickerSheetBtnCancelText}>Cancel</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.pickerSheetBtn}
+                        onPress={() => { setPickedDOB(iosTempDate); setShowDobPicker(false); }}
+                      >
+                        <Text style={styles.pickerSheetBtnText}>Done</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              </Modal>
             )}
             {/* </View> */}
 
@@ -749,43 +769,43 @@ export default function ApplyForIncubation() {
           <Text style={[styles.label, { marginLeft: 18, fontWeight: "700" }]}>13. Area of Incubation Required</Text>
           <View style={{ flexDirection: "column" }}>
             <View style={[styles.row, { marginLeft: 20 }]}>
-              <CheckBox checked={selectedRequired.shootTrip} onPress={() => handleRequiredSelect('Shoot-tip Grafting (STG)')} />
+              <CheckBox checked={!!selectedRequired['Shoot-tip Grafting (STG)']} onPress={() => handleRequiredSelect('Shoot-tip Grafting (STG)')} />
               <Text style={styles.checkLabel} onPress={() => handleRequiredSelect('Shoot-tip Grafting (STG)')}>Shoot-tip Grafting (STG)</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
-              <CheckBox checked={selectedRequired.microBudding} onPress={() => handleRequiredSelect('Micro-budding')} />
+              <CheckBox checked={!!selectedRequired['Micro-budding']} onPress={() => handleRequiredSelect('Micro-budding')} />
               <Text style={styles.checkLabel} onPress={() => handleRequiredSelect('Micro-budding')}>Micro-budding</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
-              <CheckBox checked={selectedRequired.nurseryTechnique} onPress={() => handleRequiredSelect('Containerized Nursery Technique')} />
+              <CheckBox checked={!!selectedRequired['Containerized Nursery Technique']} onPress={() => handleRequiredSelect('Containerized Nursery Technique')} />
               <Text style={styles.checkLabel} onPress={() => handleRequiredSelect('Containerized Nursery Technique')}>Containerized Nursery Technique</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
-              <CheckBox checked={selectedRequired.nurseryRetro} onPress={() => handleRequiredSelect('Retrofitting Nursery Technique')} />
+              <CheckBox checked={!!selectedRequired['Retrofitting Nursery Technique']} onPress={() => handleRequiredSelect('Retrofitting Nursery Technique')} />
               <Text style={styles.checkLabel} onPress={() => handleRequiredSelect('Retrofitting Nursery Technique')}>Retrofitting Nursery Technique</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
-              <CheckBox checked={selectedRequired.citrusProduction} onPress={() => handleRequiredSelect('Commercial Citrus Production')} />
+              <CheckBox checked={!!selectedRequired['Commercial Citrus Production']} onPress={() => handleRequiredSelect('Commercial Citrus Production')} />
               <Text style={styles.checkLabel} onPress={() => handleRequiredSelect('Commercial Citrus Production')}>Commercial Citrus Production</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
-              <CheckBox checked={selectedRequired.bioformulation} onPress={() => handleRequiredSelect('Trichoderma Bioformulation Production')} />
+              <CheckBox checked={!!selectedRequired['Trichoderma Bioformulation Production']} onPress={() => handleRequiredSelect('Trichoderma Bioformulation Production')} />
               <Text style={styles.checkLabel} onPress={() => handleRequiredSelect('Trichoderma Bioformulation Production')}>Trichoderma Bioformulation Production</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
-              <CheckBox checked={selectedRequired.bioagent} onPress={() => handleRequiredSelect('Mallada desjardensi Bioagent Production')} />
+              <CheckBox checked={!!selectedRequired['Mallada desjardensi Bioagent Production']} onPress={() => handleRequiredSelect('Mallada desjardensi Bioagent Production')} />
               <Text style={styles.checkLabel} onPress={() => handleRequiredSelect('Mallada desjardensi Bioagent Production')}>Mallada desjardensi Bioagent Production</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
-              <CheckBox checked={selectedRequired.harvest} onPress={() => handleRequiredSelect('Citrus Post-harvest Management')} />
+              <CheckBox checked={!!selectedRequired['Citrus Post-harvest Management']} onPress={() => handleRequiredSelect('Citrus Post-harvest Management')} />
               <Text style={styles.checkLabel} onPress={() => handleRequiredSelect('Citrus Post-harvest Management')}>Citrus Post-harvest Management </Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
-              <CheckBox checked={selectedRequired.valueAddition} onPress={() => handleRequiredSelect('Citrus Processing and Value-addition')} />
+              <CheckBox checked={!!selectedRequired['Citrus Processing and Value-addition']} onPress={() => handleRequiredSelect('Citrus Processing and Value-addition')} />
               <Text style={styles.checkLabel} onPress={() => handleRequiredSelect('Citrus Processing and Value-addition')}>Citrus Processing and Value-addition</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
-              <CheckBox checked={selectedRequired.prototype} onPress={() => handleRequiredSelect('I have my own business idea / prototype')} />
+              <CheckBox checked={!!selectedRequired['I have my own business idea / prototype']} onPress={() => handleRequiredSelect('I have my own business idea / prototype')} />
               <Text style={styles.checkLabel} onPress={() => handleRequiredSelect('I have my own business idea / prototype')}>I have my own business idea / prototype</Text>
             </View>
           </View>
@@ -807,51 +827,51 @@ export default function ApplyForIncubation() {
           <Text style={[styles.label, { marginLeft: 18, fontWeight: "700" }]}>14. Incubation Services Expected</Text>
           <View style={{ flexDirection: "column", marginRight: 50 }}>
             <View style={[styles.row, { marginLeft: 20 }]}>
-              <CheckBox checked={selectedExpected.transfer} onPress={() => handleExpectedSelect('Technology transfer including guidance in setting up the production/processing facility')} />
+              <CheckBox checked={!!selectedExpected['Technology transfer including guidance in setting up the production/processing facility']} onPress={() => handleExpectedSelect('Technology transfer including guidance in setting up the production/processing facility')} />
               <Text style={styles.checkLabel} onPress={() => handleExpectedSelect('Technology transfer including guidance in setting up the production/processing facility')}>Technology transfer including guidance in setting up the production/processing facility</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
-              <CheckBox checked={selectedExpected.building} onPress={() => handleExpectedSelect('Capacity building and skill development')} />
+              <CheckBox checked={!!selectedExpected['Capacity building and skill development']} onPress={() => handleExpectedSelect('Capacity building and skill development')} />
               <Text style={styles.checkLabel} onPress={() => handleExpectedSelect('Capacity building and skill development')}>Capacity building and skill development</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
-              <CheckBox checked={selectedExpected.mentoring} onPress={() => handleExpectedSelect('Scientific mentoring and technical consultancy')} />
+              <CheckBox checked={!!selectedExpected['Scientific mentoring and technical consultancy']} onPress={() => handleExpectedSelect('Scientific mentoring and technical consultancy')} />
               <Text style={styles.checkLabel} onPress={() => handleExpectedSelect('Scientific mentoring and technical consultancy')}>Scientific mentoring and technical consultancy</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
-              <CheckBox checked={selectedExpected.businessplan} onPress={() => handleExpectedSelect('Preparation of business plan and/or techno-feasibility report')} />
+              <CheckBox checked={!!selectedExpected['Preparation of business plan and/or techno-feasibility report']} onPress={() => handleExpectedSelect('Preparation of business plan and/or techno-feasibility report')} />
               <Text style={styles.checkLabel} onPress={() => handleExpectedSelect('Preparation of business plan and/or techno-feasibility report')}>Preparation of business plan and/or techno-feasibility report</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
-              <CheckBox checked={selectedExpected.citrusprocessing} onPress={() => handleExpectedSelect('Access to citrus processing plant')} />
+              <CheckBox checked={!!selectedExpected['Access to citrus processing plant']} onPress={() => handleExpectedSelect('Access to citrus processing plant')} />
               <Text style={styles.checkLabel} onPress={() => handleExpectedSelect('Access to citrus processing plant')}>Access to citrus processing plant </Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
-              <CheckBox checked={selectedExpected.services} onPress={() => handleExpectedSelect('Analytical services')} />
+              <CheckBox checked={!!selectedExpected['Analytical services']} onPress={() => handleExpectedSelect('Analytical services')} />
               <Text style={styles.checkLabel} onPress={() => handleExpectedSelect('Analytical services')}>Analytical services</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
-              <CheckBox checked={selectedExpected.foodproducts} onPress={() => handleExpectedSelect('Prototype testing, validation and refinement for citrus-based food products')} />
+              <CheckBox checked={!!selectedExpected['Prototype testing, validation and refinement for citrus-based food products']} onPress={() => handleExpectedSelect('Prototype testing, validation and refinement for citrus-based food products')} />
               <Text style={styles.checkLabel} onPress={() => handleExpectedSelect('Prototype testing, validation and refinement for citrus-based food products')}>Prototype testing, validation and refinement for citrus-based food products</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
-              <CheckBox checked={selectedExpected.citrusbased} onPress={() => handleExpectedSelect('Support in developing citrus-based food products or processes')} />
+              <CheckBox checked={!!selectedExpected['Support in developing citrus-based food products or processes']} onPress={() => handleExpectedSelect('Support in developing citrus-based food products or processes')} />
               <Text style={styles.checkLabel} onPress={() => handleExpectedSelect('Support in developing citrus-based food products or processes')}>Support in developing citrus-based food products or processes</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
-              <CheckBox checked={selectedExpected.ecofriendly} onPress={() => handleExpectedSelect('Guidance in implementing eco-friendly and sustainable practices in the citrus domain')} />
+              <CheckBox checked={!!selectedExpected['Guidance in implementing eco-friendly and sustainable practices in the citrus domain']} onPress={() => handleExpectedSelect('Guidance in implementing eco-friendly and sustainable practices in the citrus domain')} />
               <Text style={styles.checkLabel} onPress={() => handleExpectedSelect('Guidance in implementing eco-friendly and sustainable practices in the citrus domain')}>Guidance in implementing eco-friendly and sustainable practices in the citrus domain</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
-              <CheckBox checked={selectedExpected.IPprotection} onPress={() => handleExpectedSelect('Assistance related to IP protection')} />
+              <CheckBox checked={!!selectedExpected['Assistance related to IP protection']} onPress={() => handleExpectedSelect('Assistance related to IP protection')} />
               <Text style={styles.checkLabel} onPress={() => handleExpectedSelect('Assistance related to IP protection')}>Assistance related to IP protection</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
-              <CheckBox checked={selectedExpected.developing} onPress={() => handleExpectedSelect('Support in developing effective sales strategies')} />
+              <CheckBox checked={!!selectedExpected['Support in developing effective sales strategies']} onPress={() => handleExpectedSelect('Support in developing effective sales strategies')} />
               <Text style={styles.checkLabel} onPress={() => handleExpectedSelect('Support in developing effective sales strategies')}>Support in developing effective sales strategies</Text>
             </View>
             <View style={[styles.row, { marginLeft: 20 }]}>
-              <CheckBox checked={selectedExpected.designing} onPress={() => handleExpectedSelect('Logo designing and brand building')} />
+              <CheckBox checked={!!selectedExpected['Logo designing and brand building']} onPress={() => handleExpectedSelect('Logo designing and brand building')} />
               <Text style={styles.checkLabel} onPress={() => handleExpectedSelect('Logo designing and brand building')}>Logo designing and brand building</Text>
             </View>
           </View>
@@ -953,6 +973,51 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 14,
     justifyContent: 'center',
+  },
+  pickerBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+    justifyContent: 'flex-end',
+  },
+  pickerBackdropTouch: {
+    flex: 1,
+  },
+  pickerSheet: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingBottom: 24,
+    paddingHorizontal: 12,
+  },
+  iosCalendar: {
+    height: 320,
+    width: '100%',
+  },
+  pickerSheetButtons: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 10,
+    paddingHorizontal: 8,
+    paddingTop: 8,
+  },
+  pickerSheetBtn: {
+    backgroundColor: '#EC7E1C',
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 22,
+  },
+  pickerSheetBtnText: {
+    color: '#FFFFFF',
+    fontWeight: '800',
+    fontSize: 15,
+  },
+  pickerSheetBtnCancel: {
+    backgroundColor: '#F1EDE8',
+  },
+  pickerSheetBtnCancelText: {
+    color: '#444444',
+    fontWeight: '700',
+    fontSize: 15,
   },
   iosPickerCard: {
     width: '100%',
@@ -1092,6 +1157,6 @@ const pickerSelectStyles = StyleSheet.create({
     width: '100%',
   },
   placeholder: {
-    color: '#9E9A94',
+    color: '#6B6B6B',
   },
 });
