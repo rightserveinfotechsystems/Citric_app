@@ -54,7 +54,7 @@ export default function ReachUs() {
   const load = useCallback(async () => {
     try {
       const response = await communication.getContacts();
-      const normalized = normalizeContacts(response?.data);
+      const normalized = normalizeContacts(response?.data?.contacts);
       setContacts(normalized ?? FALLBACK_CONTACTS);
     } catch {
       setContacts(FALLBACK_CONTACTS);

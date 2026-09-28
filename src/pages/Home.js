@@ -101,7 +101,7 @@ export default function Home() {
     (async () => {
       try {
         const response = await communication.getDeveloper();
-        const normalized = normalizeCredits(response?.data);
+        const normalized = normalizeCredits(response?.data?.credits);
         if (active && normalized) setCredits(normalized); // API fails → keep defaults
       } catch {
         /* offline / endpoint missing → bundled credits stay */
