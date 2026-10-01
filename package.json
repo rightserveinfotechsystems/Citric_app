@@ -69,7 +69,8 @@
     "eslint": "^8.19.0",
     "jest": "^29.6.3",
     "prettier": "2.8.8",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "eas-cli": "^24.7.0"
   },
   "engines": {
     "node": ">=22.13.0"
