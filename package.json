@@ -40,6 +40,7 @@
     "expo": "~57.0.25",
     "expo-asset": "~57.0.18",
     "expo-dev-client": "~57.0.19",
+    "expo-location": "~57.0.20",
     "expo-splash-screen": "^57.0.9",
     "expo-status-bar": "~57.0.1",
     "expo-updates": "~57.0.23",

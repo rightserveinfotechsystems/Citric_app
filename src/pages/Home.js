@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Linking, Text, TouchableOpacity, View, Image, StyleSheet } from 'react-native';
+import { Linking, Text, TouchableOpacity, View, Image, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import * as Location from 'expo-location';
 import { ScreenShell } from '../components/common/ScreenShell';
 import { communication } from '../services/communication';
 
@@ -56,6 +57,42 @@ const HOME = {
   designedBy: { label: 'Designed by LIVEpro', url: 'https://liveprosolutions.com/' },
 };
 
+/** Directions destination: ICAR-CCRI, Nagpur (same place as the old ReachUs map link). */
+const DESTINATION = 'ICAR-Central Citrus Research Institute, Amravati Road, Nagpur';
+
+/**
+ * "Use my location" — permission dialog → GPS fix → Google/Apple Maps route
+ * from the user's current position to the institute. Like the old
+ * WebView/website behaviour, but fully native.
+ */
+async function openDirectionsFromMyLocation(setLocating) {
+  setLocating(true);
+  try {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert(
+        'Location permission needed',
+        'Allow location access so Citri Hub can show directions from your place to ICAR-CCRI.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Open Settings', onPress: () => Linking.openSettings() },
+        ],
+      );
+      return;
+    }
+    const position = await Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.Balanced,
+    });
+    const { latitude, longitude } = position.coords;
+    const url = `https://www.google.com/maps/dir/?api=1&origin=${latitude},${longitude}&destination=${encodeURIComponent(DESTINATION)}`;
+    Linking.openURL(url);
+  } catch {
+    Alert.alert('Could not get location', 'Please make sure location services (GPS) are enabled and try again.');
+  } finally {
+    setLocating(false);
+  }
+}
+
 /** Pairs tiles into rows of two (original launcher layout). */
 function toRows(tiles) {
   const rows = [];
@@ -95,6 +132,7 @@ function normalizeCredits(payload) {
 export default function Home() {
   const navigation = useNavigation();
   const [credits, setCredits] = useState(HOME.credits); // bundled defaults render instantly
+  const [locating, setLocating] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -140,6 +178,26 @@ export default function Home() {
         </View>
       ))}
 
+      <TouchableOpacity
+        style={styles.directionsCard}
+        activeOpacity={0.7}
+        disabled={locating}
+        onPress={() => openDirectionsFromMyLocation(setLocating)}
+        accessibilityRole="button"
+        accessibilityLabel="Use my location to get directions to ICAR-CCRI"
+      >
+        <View style={styles.pinBadge}>
+          <View style={styles.pinInner} />
+        </View>
+        <View style={styles.directionsTextWrap}>
+          <Text style={styles.directionsTitle}>
+            {locating ? 'Finding your location…' : 'Use my location'}
+          </Text>
+          <Text style={styles.directionsSub}>Get directions to ICAR-CCRI, Nagpur</Text>
+        </View>
+        <View style={styles.dirArrow} />
+      </TouchableOpacity>
+
       <View style={styles.creditsBox}>
         <Text style={styles.headText}>{credits.leadHeading}</Text>
         {credits.lead.map((person, i) =>
@@ -176,6 +234,60 @@ export default function Home() {
 const styles = StyleSheet.create({
   content: {
     backgroundColor: 'rgb(233 219 206)',
+  },
+  directionsCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '90%',
+    alignSelf: 'center',
+    marginTop: 15,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: '#EC7E1C',
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+  },
+  pinBadge: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: '#EC7E1C',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  pinInner: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#FFFFFF',
+  },
+  directionsTextWrap: {
+    flex: 1,
+    flexShrink: 1,
+  },
+  directionsTitle: {
+    fontSize: 15.5,
+    fontWeight: '800',
+    color: '#1F1F1F',
+  },
+  directionsSub: {
+    marginTop: 2,
+    fontSize: 12.5,
+    fontWeight: '600',
+    color: '#6B6B6B',
+  },
+  dirArrow: {
+    width: 0,
+    height: 0,
+    borderLeftWidth: 7,
+    borderRightWidth: 7,
+    borderTopWidth: 9,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderTopColor: '#EC7E1C',
+    marginLeft: 8,
   },
   logoContainer: {
     flexDirection: 'row',
