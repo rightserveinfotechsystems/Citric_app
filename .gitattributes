@@ -5,3 +5,7 @@ ios/.xcode.env text eol=lf
 *.command text eol=lf
 ios/Podfile text eol=lf
 gradlew text eol=lf
+
+# pbxproj embeds shell scripts with raw newlines — CRLF breaks them on EAS
+# (".xcode.env/strip script: unexpected end of file / command not found")
+*.pbxproj text eol=lf
