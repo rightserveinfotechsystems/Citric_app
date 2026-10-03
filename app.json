@@ -40,7 +40,7 @@
           "NSAllowsArbitraryLoads": false,
           "NSAllowsLocalNetworking": true
         },
-        "NSLocationWhenInUseUsageDescription": "Citri Hub uses your location only to show driving directions from your place to ICAR-CCRI, Nagpur.",
+        "NSLocationWhenInUseUsageDescription": "",
         "UISupportedInterfaceOrientations": [
           "UIInterfaceOrientationPortrait",
           "UIInterfaceOrientationLandscapeLeft",
